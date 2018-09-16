@@ -1,0 +1,892 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{2-Copy1}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}1}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+        \PY{k+kn}{import} \PY{n+nn}{scipy} \PY{k}{as} \PY{n+nn}{sp}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{use}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ggplot}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{o}{\PYZpc{}\PYZpc{}}\PY{k}{file} hw\PYZus{}data.csv
+        id,sex,weight,height
+        1,M,190,77
+        2,F,120,70
+        3,F,110,68
+        4,M,150,72
+        5,O,120,66
+        6,M,120,60
+        7,F,140,70
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Overwriting hw\_data.csv
+
+    \end{Verbatim}
+
+    \section{Python}\label{python}
+
+    \section{1. Finish creating the following function that takes a list and
+returns the average
+value.}\label{finish-creating-the-following-function-that-takes-a-list-and-returns-the-average-value.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{k}{def} \PY{n+nf}{average}\PY{p}{(}\PY{n}{my\PYZus{}list}\PY{p}{)}\PY{p}{:}
+            \PY{n}{total} \PY{o}{=} \PY{l+m+mi}{0}
+            \PY{k}{for} \PY{n}{item} \PY{o+ow}{in} \PY{n}{my\PYZus{}list}\PY{p}{:}
+                
+                \PY{n}{total} \PY{o}{+}\PY{o}{=} \PY{n}{item}
+                
+            \PY{k}{return} \PY{n}{total}\PY{o}{/}\PY{n+nb}{len}\PY{p}{(}\PY{n}{my\PYZus{}list}\PY{p}{)} 
+        
+        \PY{n}{average}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{9}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}4}]:} 3.375
+\end{Verbatim}
+            
+    \subsection{2. Using a Dictionary keep track of the count of numbers (or
+items) from a
+list}\label{using-a-dictionary-keep-track-of-the-count-of-numbers-or-items-from-a-list}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{k}{def} \PY{n+nf}{counts}\PY{p}{(}\PY{n}{my\PYZus{}list}\PY{p}{)}\PY{p}{:}
+            \PY{n}{counts} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+            \PY{k}{for} \PY{n}{item} \PY{o+ow}{in} \PY{n}{my\PYZus{}list}\PY{p}{:}
+                \PY{c+c1}{\PYZsh{}do something with item!}
+                \PY{k}{if} \PY{o+ow}{not} \PY{n}{item} \PY{o+ow}{in} \PY{n}{counts}\PY{p}{:}
+                    \PY{n}{counts}\PY{p}{[}\PY{n}{item}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{0}
+                \PY{n}{counts}\PY{p}{[}\PY{n}{item}\PY{p}{]} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1} 
+            \PY{k}{return} \PY{n}{counts}
+        
+        \PY{n}{CountsInstances} \PY{o}{=} \PY{n}{counts}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{9}\PY{p}{]}\PY{p}{)} 
+        
+        \PY{k}{for} \PY{n}{Instance} \PY{o+ow}{in} \PY{n}{CountsInstances}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{Instance}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{CountsInstances}\PY{p}{[}\PY{n}{Instance}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+1: 2
+2: 2
+4: 1
+3: 1
+5: 1
+9: 1
+
+    \end{Verbatim}
+
+    \subsection{\texorpdfstring{3. Using the \texttt{counts()} function and
+the \texttt{.split()} function, return a dictionary of most occuring
+words from the following paragraph. Bonus, remove punctuation from
+words.}{3. Using the counts() function and the .split() function, return a dictionary of most occuring words from the following paragraph. Bonus, remove punctuation from words.}}\label{using-the-counts-function-and-the-.split-function-return-a-dictionary-of-most-occuring-words-from-the-following-paragraph.-bonus-remove-punctuation-from-words.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{paragraph\PYZus{}text} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+        \PY{l+s+s1}{For a minute or two she stood looking at the house, and wondering what to do next, when suddenly a footman in livery came running out of the wood—(she considered him to be a footman because he was in livery: otherwise, judging by his face only, she would have called him a fish)—and rapped loudly at the door with his knuckles. It was opened by another footman in livery, with a round face, and large eyes like a frog; and both footmen, Alice noticed, had powdered hair that curled all over their heads. She felt very curious to know what it was all about, and crept a little way out of the wood to listen.}
+        \PY{l+s+s1}{The Fish\PYZhy{}Footman began by producing from under his arm a great letter, nearly as large as himself, and this he handed over to the other, saying, in a solemn tone, ‘For the Duchess. An invitation from the Queen to play croquet.’ The Frog\PYZhy{}Footman repeated, in the same solemn tone, only changing the order of the words a little, ‘From the Queen. An invitation for the Duchess to play croquet.’}
+        \PY{l+s+s1}{Then they both bowed low, and their curls got entangled together.}
+        \PY{l+s+s1}{Alice laughed so much at this, that she had to run back into the wood for fear of their hearing her; and when she next peeped out the Fish\PYZhy{}Footman was gone, and the other was sitting on the ground near the door, staring stupidly up into the sky.}
+        \PY{l+s+s1}{Alice went timidly up to the door, and knocked.}
+        \PY{l+s+s1}{‘There’s no sort of use in knocking,’ said the Footman, ‘and that for two reasons. First, because I’m on the same side of the door as you are; secondly, because they’re making such a noise inside, no one could possibly hear you.’ And certainly there was a most extraordinary noise going on within—a constant howling and sneezing, and every now and then a great crash, as if a dish or kettle had been broken to pieces.}
+        \PY{l+s+s1}{‘Please, then,’ said Alice, ‘how am I to get in?’}
+        \PY{l+s+s1}{‘There might be some sense in your knocking,’ the Footman went on without attending to her, ‘if we had the door between us. For instance, if you were inside, you might knock, and I could let you out, you know.’ He was looking up into the sky all the time he was speaking, and this Alice thought decidedly uncivil. ‘But perhaps he can’t help it,’ she said to herself; ‘his eyes are so very nearly at the top of his head. But at any rate he might answer questions.—How am I to get in?’ she repeated, aloud.}
+        \PY{l+s+s1}{‘I shall sit here,’ the Footman remarked, ‘till tomorrow—’}
+        \PY{l+s+s1}{At this moment the door of the house opened, and a large plate came skimming out, straight at the Footman’s head: it just grazed his nose, and broke to pieces against one of the trees behind him.}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+        
+        \PY{c+c1}{\PYZsh{} Bonus point first: clean the corpus}
+        \PY{k+kn}{import} \PY{n+nn}{re}
+        \PY{n}{clean} \PY{o}{=} \PY{n}{re}\PY{o}{.}\PY{n}{sub}\PY{p}{(}\PY{l+s+sa}{r}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{[\PYZca{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{s]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{paragraph\PYZus{}text}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{n}{clean}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+For a minute or two she stood looking at the house and wondering what to do next when suddenly a footman in livery came running out of the woodshe considered him to be a footman because he was in livery otherwise judging by his face only she would have called him a fishand rapped loudly at the door with his knuckles It was opened by another footman in livery with a round face and large eyes like a frog and both footmen Alice noticed had powdered hair that curled all over their heads She felt very curious to know what it was all about and crept a little way out of the wood to listen
+The FishFootman began by producing from under his arm a great letter nearly as large as himself and this he handed over to the other saying in a solemn tone For the Duchess An invitation from the Queen to play croquet The FrogFootman repeated in the same solemn tone only changing the order of the words a little From the Queen An invitation for the Duchess to play croquet
+Then they both bowed low and their curls got entangled together
+Alice laughed so much at this that she had to run back into the wood for fear of their hearing her and when she next peeped out the FishFootman was gone and the other was sitting on the ground near the door staring stupidly up into the sky
+Alice went timidly up to the door and knocked
+Theres no sort of use in knocking said the Footman and that for two reasons First because Im on the same side of the door as you are secondly because theyre making such a noise inside no one could possibly hear you And certainly there was a most extraordinary noise going on withina constant howling and sneezing and every now and then a great crash as if a dish or kettle had been broken to pieces
+Please then said Alice how am I to get in
+There might be some sense in your knocking the Footman went on without attending to her if we had the door between us For instance if you were inside you might knock and I could let you out you know He was looking up into the sky all the time he was speaking and this Alice thought decidedly uncivil But perhaps he cant help it she said to herself his eyes are so very nearly at the top of his head But at any rate he might answer questionsHow am I to get in she repeated aloud
+I shall sit here the Footman remarked till tomorrow
+At this moment the door of the house opened and a large plate came skimming out straight at the Footmans head it just grazed his nose and broke to pieces against one of the trees behind him
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} Sorting the cleaned words by frequency}
+        \PY{n}{words} \PY{o}{=} \PY{p}{(}\PY{n}{clean}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n}{sorted\PYZus{}words} \PY{o}{=} \PY{n+nb}{sorted}\PY{p}{(}\PY{n}{words}\PY{p}{,} \PY{n}{key} \PY{o}{=} \PY{n}{words}\PY{o}{.}\PY{n}{count}\PY{p}{,} \PY{n}{reverse} \PY{o}{=} \PY{k+kc}{True}\PY{p}{)}
+        \PY{n}{counts}\PY{p}{(}\PY{n}{sorted\PYZus{}words}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}7}]:} \{'the': 32,
+         'and': 17,
+         'a': 15,
+         'to': 15,
+         'in': 9,
+         'of': 9,
+         'was': 8,
+         'she': 6,
+         'at': 6,
+         'his': 6,
+         'door': 6,
+         'you': 6,
+         'out': 5,
+         'he': 5,
+         'Alice': 5,
+         'had': 4,
+         'as': 4,
+         'this': 4,
+         'on': 4,
+         'I': 4,
+         'For': 3,
+         'footman': 3,
+         'livery': 3,
+         'him': 3,
+         'because': 3,
+         'by': 3,
+         'large': 3,
+         'that': 3,
+         'all': 3,
+         'their': 3,
+         'it': 3,
+         'for': 3,
+         'into': 3,
+         'up': 3,
+         'said': 3,
+         'Footman': 3,
+         'if': 3,
+         'might': 3,
+         'or': 2,
+         'two': 2,
+         'looking': 2,
+         'house': 2,
+         'what': 2,
+         'next': 2,
+         'when': 2,
+         'came': 2,
+         'be': 2,
+         'face': 2,
+         'only': 2,
+         'with': 2,
+         'opened': 2,
+         'eyes': 2,
+         'both': 2,
+         'over': 2,
+         'very': 2,
+         'know': 2,
+         'little': 2,
+         'wood': 2,
+         'The': 2,
+         'FishFootman': 2,
+         'from': 2,
+         'great': 2,
+         'nearly': 2,
+         'other': 2,
+         'solemn': 2,
+         'tone': 2,
+         'Duchess': 2,
+         'An': 2,
+         'invitation': 2,
+         'Queen': 2,
+         'play': 2,
+         'croquet': 2,
+         'repeated': 2,
+         'same': 2,
+         'so': 2,
+         'her': 2,
+         'sky': 2,
+         'went': 2,
+         'no': 2,
+         'knocking': 2,
+         'are': 2,
+         'noise': 2,
+         'inside': 2,
+         'one': 2,
+         'could': 2,
+         'then': 2,
+         'pieces': 2,
+         'am': 2,
+         'get': 2,
+         'But': 2,
+         'head': 2,
+         'minute': 1,
+         'stood': 1,
+         'wondering': 1,
+         'do': 1,
+         'suddenly': 1,
+         'running': 1,
+         'woodshe': 1,
+         'considered': 1,
+         'otherwise': 1,
+         'judging': 1,
+         'would': 1,
+         'have': 1,
+         'called': 1,
+         'fishand': 1,
+         'rapped': 1,
+         'loudly': 1,
+         'knuckles': 1,
+         'It': 1,
+         'another': 1,
+         'round': 1,
+         'like': 1,
+         'frog': 1,
+         'footmen': 1,
+         'noticed': 1,
+         'powdered': 1,
+         'hair': 1,
+         'curled': 1,
+         'heads': 1,
+         'She': 1,
+         'felt': 1,
+         'curious': 1,
+         'about': 1,
+         'crept': 1,
+         'way': 1,
+         'listen': 1,
+         'began': 1,
+         'producing': 1,
+         'under': 1,
+         'arm': 1,
+         'letter': 1,
+         'himself': 1,
+         'handed': 1,
+         'saying': 1,
+         'FrogFootman': 1,
+         'changing': 1,
+         'order': 1,
+         'words': 1,
+         'From': 1,
+         'Then': 1,
+         'they': 1,
+         'bowed': 1,
+         'low': 1,
+         'curls': 1,
+         'got': 1,
+         'entangled': 1,
+         'together': 1,
+         'laughed': 1,
+         'much': 1,
+         'run': 1,
+         'back': 1,
+         'fear': 1,
+         'hearing': 1,
+         'peeped': 1,
+         'gone': 1,
+         'sitting': 1,
+         'ground': 1,
+         'near': 1,
+         'staring': 1,
+         'stupidly': 1,
+         'timidly': 1,
+         'knocked': 1,
+         'Theres': 1,
+         'sort': 1,
+         'use': 1,
+         'reasons': 1,
+         'First': 1,
+         'Im': 1,
+         'side': 1,
+         'secondly': 1,
+         'theyre': 1,
+         'making': 1,
+         'such': 1,
+         'possibly': 1,
+         'hear': 1,
+         'And': 1,
+         'certainly': 1,
+         'there': 1,
+         'most': 1,
+         'extraordinary': 1,
+         'going': 1,
+         'withina': 1,
+         'constant': 1,
+         'howling': 1,
+         'sneezing': 1,
+         'every': 1,
+         'now': 1,
+         'crash': 1,
+         'dish': 1,
+         'kettle': 1,
+         'been': 1,
+         'broken': 1,
+         'Please': 1,
+         'how': 1,
+         'There': 1,
+         'some': 1,
+         'sense': 1,
+         'your': 1,
+         'without': 1,
+         'attending': 1,
+         'we': 1,
+         'between': 1,
+         'us': 1,
+         'instance': 1,
+         'were': 1,
+         'knock': 1,
+         'let': 1,
+         'He': 1,
+         'time': 1,
+         'speaking': 1,
+         'thought': 1,
+         'decidedly': 1,
+         'uncivil': 1,
+         'perhaps': 1,
+         'cant': 1,
+         'help': 1,
+         'herself': 1,
+         'top': 1,
+         'any': 1,
+         'rate': 1,
+         'answer': 1,
+         'questionsHow': 1,
+         'aloud': 1,
+         'shall': 1,
+         'sit': 1,
+         'here': 1,
+         'remarked': 1,
+         'till': 1,
+         'tomorrow': 1,
+         'At': 1,
+         'moment': 1,
+         'plate': 1,
+         'skimming': 1,
+         'straight': 1,
+         'Footmans': 1,
+         'just': 1,
+         'grazed': 1,
+         'nose': 1,
+         'broke': 1,
+         'against': 1,
+         'trees': 1,
+         'behind': 1\}
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Then, show the word with the highest frequency, which would be the first word in the sorted list}
+        \PY{n}{sorted\PYZus{}words}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}8}]:} 'the'
+\end{Verbatim}
+            
+    \section{Numpy}\label{numpy}
+
+    \subsection{1. Given a list, find the average using a numpy
+function.}\label{given-a-list-find-the-average-using-a-numpy-function.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{simple\PYZus{}list} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{9}\PY{p}{]}
+        \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{simple\PYZus{}list}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}9}]:} 3.375
+\end{Verbatim}
+            
+    \subsection{\texorpdfstring{2. Given two lists of Heights and Weights of
+individual, calculate the BMI of those individuals, without writing a
+\texttt{for-loop}}{2. Given two lists of Heights and Weights of individual, calculate the BMI of those individuals, without writing a for-loop}}\label{given-two-lists-of-heights-and-weights-of-individual-calculate-the-bmi-of-those-individuals-without-writing-a-for-loop}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{heights} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{174}\PY{p}{,} \PY{l+m+mi}{173}\PY{p}{,} \PY{l+m+mi}{173}\PY{p}{,} \PY{l+m+mi}{175}\PY{p}{,} \PY{l+m+mi}{171}\PY{p}{]}
+         \PY{n}{weights} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{88}\PY{p}{,} \PY{l+m+mi}{83}\PY{p}{,} \PY{l+m+mi}{92}\PY{p}{,} \PY{l+m+mi}{74}\PY{p}{,} \PY{l+m+mi}{77}\PY{p}{]}
+         
+         \PY{n}{BMI} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{divide}\PY{p}{(}\PY{n}{heights}\PY{p}{,} \PY{n}{weights}\PY{p}{)}
+         \PY{n}{BMI}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}10}]:} array([1.97727273, 2.08433735, 1.88043478, 2.36486486, 2.22077922])
+\end{Verbatim}
+            
+    \subsection{3. Create an array of length 20 filled with random values
+(between 0 to
+1)}\label{create-an-array-of-length-20-filled-with-random-values-between-0-to-1}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{rand}\PY{p}{(}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}11}]:} array([[0.53560784],
+                [0.79019644],
+                [0.29468666],
+                [0.76593766],
+                [0.52416396],
+                [0.84133468],
+                [0.73675642],
+                [0.64492277],
+                [0.55649105],
+                [0.17705064],
+                [0.08433636],
+                [0.80696545],
+                [0.42804723],
+                [0.78643782],
+                [0.40077654],
+                [0.6542051 ],
+                [0.24364698],
+                [0.88022849],
+                [0.10371361],
+                [0.81311934]])
+\end{Verbatim}
+            
+    \subsection{Bonus. 1. Create an array with a large (\textgreater{}1000)
+length filled with random numbers from different distributions (normal,
+uniform, etc.). 2. Then, plot a histogram of these
+values.}\label{bonus.-1.-create-an-array-with-a-large-1000-length-filled-with-random-numbers-from-different-distributions-normal-uniform-etc..-2.-then-plot-a-histogram-of-these-values.}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{uniform} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1000}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{uniform}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}12}]:} [<matplotlib.lines.Line2D at 0x11183d518>]
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{normal} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1000}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{normal}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}13}]:} [<matplotlib.lines.Line2D at 0x111a36f28>]
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \section{Pandas}\label{pandas}
+
+    \subsection{1. Read in a CSV () and display all the columns and their
+respective data
+types}\label{read-in-a-csv-and-display-all-the-columns-and-their-respective-data-types}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{hw\PYZus{}data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{health} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{hw\PYZus{}data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{health}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:}    id sex  weight  height
+         0   1   M     190      77
+         1   2   F     120      70
+         2   3   F     110      68
+         3   4   M     150      72
+         4   5   O     120      66
+         5   6   M     120      60
+         6   7   F     140      70
+\end{Verbatim}
+            
+    \subsection{2. Find the average weight}\label{find-the-average-weight}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{weight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}15}]:} 135.71428571428572
+\end{Verbatim}
+            
+    \subsection{\texorpdfstring{3. Find the Value Counts on column
+\texttt{sex}}{3. Find the Value Counts on column sex}}\label{find-the-value-counts-on-column-sex}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{counts}\PY{p}{(}\PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}16}]:} \{'M': 3, 'F': 3, 'O': 1\}
+\end{Verbatim}
+            
+    \subsection{4. Plot Height vs. Weight}\label{plot-height-vs.-weight}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{height}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{weight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}17}]:} <matplotlib.collections.PathCollection at 0x111c47400>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_30_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{5. Calculate BMI and save as a new
+column}\label{calculate-bmi-and-save-as-a-new-column}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bmi}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{health}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{weight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         
+         \PY{n}{health}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}18}]:}    id sex  weight  height         bmi
+         0   1   M     190      77  135.714286
+         1   2   F     120      70  135.714286
+         2   3   F     110      68  135.714286
+         3   4   M     150      72  135.714286
+         4   5   O     120      66  135.714286
+         5   6   M     120      60  135.714286
+         6   7   F     140      70  135.714286
+\end{Verbatim}
+            
+    \subsection{\texorpdfstring{6. Save sheet as a new CSV file
+\texttt{hw\_dataB.csv}}{6. Save sheet as a new CSV file hw\_dataB.csv}}\label{save-sheet-as-a-new-csv-file-hw_datab.csv}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{health}\PY{o}{.}\PY{n}{to\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hw\PYZus{}dataB.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{sep}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}t}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \subsection{Run the following}\label{run-the-following}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{o}{!}cat hw\PYZus{}dataB.csv
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+	id	sex	weight	height	bmi
+0	1	M	190	77	135.71428571428572
+1	2	F	120	70	135.71428571428572
+2	3	F	110	68	135.71428571428572
+3	4	M	150	72	135.71428571428572
+4	5	O	120	66	135.71428571428572
+5	6	M	120	60	135.71428571428572
+6	7	F	140	70	135.71428571428572
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}21}]:} \PY{c+c1}{\PYZsh{}Cool!}
+\end{Verbatim}
+
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}

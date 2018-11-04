@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{9-Copy1}
+    \title{10-Copy1}
     
     
     
@@ -280,4759 +280,3688 @@
     
 
     
-    \section{9 Clustering}\label{clustering}
+    \section{Assignment 10}\label{assignment-10}
 
-    \subsection{1. DBSCAN}\label{dbscan}
+Find your favorite news source and grab the article text.
 
-Using DBSCAN iterate (for-loop) through different values of
-\texttt{min\_samples} (1 to 10) and \texttt{epsilon} (.05 to .5, in
-steps of .01) to find clusters in the road-data used in the Lesson and
-calculate the Silohouette Coeff for \texttt{min\_samples} and
-\texttt{epsilon}. Plot \textbf{\emph{one}} line plot with the multiple
-lines generated from the min\_samples and epsilon values. Use a 2D array
-to store the SilCoeff values, one dimension represents
-\texttt{min\_samples}, the other represents epsilon.
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Show the most common words in the article.
+\item
+  Show the most common words under a part of speech. (i.e. NOUN:
+  \{'Bob':12, 'Alice':4,\})
+\item
+  Find a subject/object relationship through the dependency parser in
+  any sentence.
+\item
+  Show the most common Entities and their types.
+\item
+  Find Entites and their dependency (hint: entity.root.head)
+\item
+  Find the most similar words in the article
+\end{enumerate}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}60}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
-         \PY{c+c1}{\PYZsh{} allow plots to appear in the notebook}
-         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} notebook
-         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-         \PY{k+kn}{import} \PY{n+nn}{seaborn}
-         \PY{k+kn}{from} \PY{n+nn}{mpl\PYZus{}toolkits}\PY{n+nn}{.}\PY{n+nn}{mplot3d} \PY{k}{import} \PY{n}{Axes3D}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{font.size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{14}
-         \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{10.0}\PY{p}{,} \PY{l+m+mf}{5.0}\PY{p}{)}
-         
-         
-         \PY{n}{X} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../data/3D\PYZus{}spatial\PYZus{}network.txt.gz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{header}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{names}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{osm}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-         \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{osm}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{l+m+mi}{10000}\PY{p}{)}
-         \PY{n}{X}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}1}]:} \PY{c+c1}{\PYZsh{} !pip3 install spacy}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{text} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{In March 2017, a woman met with the admissions coordinator at Madison York Assisted Living in Queens, inquiring about placement for her mother\PYZhy{}in\PYZhy{}law, who was using a wheelchair while recovering from hip surgery. “Wheelchairs are not allowed in the facility,” the coordinator told her. “Walkers, canes, rollators, hemi canes, something like that is acceptable.” But, he went on, “we cannot accommodate a wheelchair\PYZhy{}bound patient.” In November, another woman seeking assisted living for her mother\PYZhy{}in\PYZhy{}law emailed the admissions coordinator at VillageCare at 46 \PYZam{} Ten in Manhattan. “We do not admit residents on wheelchairs,” the coordinator wrote back. By phone, the woman explained that her mother\PYZhy{}in\PYZhy{}law had used a chair for decades and could transfer in and out without assistance. The coordinator wouldn’t budge. “We could not accept anyone in a wheelchair,” she said. Yet at both places, and at two other assisted living facilities in New York City, people who made similar inquiries — but described their relatives as able to walk — were encouraged to submit applications. None of these people actually had family members who needed assisted living. They were testers, professional actors working for the nonprofit Fair Housing Justice Center to investigate whether such facilities discriminate against wheelchair users. Excerpts from their recorded conversations are included in a federal lawsuit filed against those centers, claiming they discriminate against people in wheelchairs and are violating the Fair Housing Act, the Americans with Disabilities Act and other federal laws. “People were being threatened with eviction, or actually evicted, for even part\PYZhy{}time use of a wheelchair,” said Fred Freiberg, director of the anti\PYZhy{}discrimination group, which brought the suit after receiving complaints from residents and families. “It’s outrageous. They were told, ‘If you’re going to use a wheelchair, you can’t live here anymore.’” Related cases have popped up for years in senior housing nationwide, including continuing care retirement communities. In 2015, for instance, the Justice Department reached settlements with a continuing care facility in Norfolk, Va., and one in Lincolnshire, Ill., for discriminating against residents with disabilities. Unlike nursing homes, which are subject to federal regulations and regular inspections, assisted and independent living facilities operate under widely varying state laws. Oklahoma and Alabama require residents to be “ambulatory,” for instance, but Kentucky allows admission of the “mobile nonambulatory,” meaning people who use walkers or wheelchairs. “Many states have similar policies, though with different language, like ‘must be able to self\PYZhy{}evacuate,’ which is often interpreted to mean ‘no wheelchairs,’” said Susan Silverstein, a senior lawyer for the AARP Foundation, which is representing the plaintiffs. “Facilities often justify their policies by citing state laws that are ambiguous.” Administrators of the facilities named in the New York lawsuit, including Elm York Assisted Living and Madison York Assisted Living, (which share ownership with the other residence in Queens), often cited state laws as reasons to exclude wheelchair users, according to the complaint. And in this case, they appear to be correct. New York State regulations governing “adult care facilities” and Medicaid\PYZhy{}funded assisted living programs, which all four facilities are licensed to offer, do prohibit residents who are “chronically chairfast and unable to transfer” or require assistance to transfer — even when, as in this case, the buildings have elevators. Those 40\PYZhy{}year\PYZhy{}old policies predate the federal laws barring discrimination based on disability, but the state has not revised them. For that reason, the lawsuit also names the state health department and commissioner, plus Gov. Andrew Cuomo, as defendants. Neither the governor’s office nor the four assisted living facilities would comment. The state’s health department said it considered “reasonable wheelchair accessibility” in adult homes a priority and that it began working with existing homes last year on “remediation plans that include appropriate upgrades.” Newly constructed adult homes, it noted, must comply with federal, state and local accessibility requirements. The suit asks that the four facilities adopt nondiscriminatory admission and retention policies, and that the state update its regulations to reflect federal law. It also seeks training and monitoring to ensure compliance. While administrators might still turn away applicants for individual reasons, they couldn’t maintain blanket rules against wheelchairs. “There’s going to be a much larger number of people in the next few years who will need assisted living, and those facilities need to be open to people,” Mr. Freiberg said. Although the assisted living industry mainly attracts people who are paying for the care themselves, “the percentage covered by Medicaid is growing,” said Eric Carlson, a lawyer at Justice in Aging, an advocacy group not involved in the lawsuit. A recent Government Accountability Office report pointed out that in 2014, Medicaid covered assisted\PYZhy{}living services for more than 330,000 people in 48 states — part of the effort to support alternatives to expensive nursing homes. A favorable settlement or trial verdict in the New York lawsuit could bring changes in assisted living beyond Medicaid programs and beyond New York State. “Private\PYZhy{}pay assisted living is still subject to the Fair Housing Act,” said Jota Borgmann, senior staff lawyer at Mobilization for Justice, a legal services organization and co\PYZhy{}counsel in the case. Similar court cases have already changed assisted living regulations and practices around the country, Mr. Carlson pointed out. “It’s not like flipping a switch,” he said. “It’s step by step, but they have impact.” While the relatives that testers described to administrators were fictitious, a retired lawyer in her 60s, known in court filings only as Jane Doe because she feared she might be blackballed from care facilities, is quite real. She’s also a plaintiff in the lawsuit, along with her brother, who acts as her power of attorney. Disabled by severe osteoporosis, the plaintiff lived at VillageCare for five years, until last spring when a urinary tract infection and its complications sent her to a hospital, then to a nursing home for rehabilitation. After two months, according to the complaint, VillageCare told her she needed more assistance than it could provide, including help with “ambulation,” and told her she could not return. It began eviction proceedings, which her brother contested. In December, the facility agreed to an in\PYZhy{}person interview and assessment. The session — including cognitive tests, sitting and standing, and taking her shoes on and off — lasted four hours. “It was grueling,” said her brother, who traveled from his Florida home to accompany her. “It was a very difficult thing, but my sister did it. She walked with her walker just fine.” But VillageCare refused to readmit her, saying she needed assistance with activities of daily living, including “locomotion.” So she remains in a nursing home, where she is discouraged from walking at all, and worries that she may never go home. “It’s very disheartening,” her brother said. “I keep telling her, ‘You’re going to be out any day,’ and I’ve been wrong.”}\PY{l+s+s2}{\PYZdq{}}
+        \PY{n}{text}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}60}]:}                  lat        lon
-         108514324  57.116136   7.935940
-         145155209  57.323512  28.719403
-         139894123  57.491219  42.535347
-         80477583   57.418888  19.245527
-         103953351  56.871157  20.010514
+{\color{outcolor}Out[{\color{outcolor}2}]:} 'In March 2017, a woman met with the admissions coordinator at Madison York Assisted Living in Queens, inquiring about placement for her mother-in-law, who was using a wheelchair while recovering from hip surgery. “Wheelchairs are not allowed in the facility,” the coordinator told her. “Walkers, canes, rollators, hemi canes, something like that is acceptable.” But, he went on, “we cannot accommodate a wheelchair-bound patient.” In November, another woman seeking assisted living for her mother-in-law emailed the admissions coordinator at VillageCare at 46 \& Ten in Manhattan. “We do not admit residents on wheelchairs,” the coordinator wrote back. By phone, the woman explained that her mother-in-law had used a chair for decades and could transfer in and out without assistance. The coordinator wouldn’t budge. “We could not accept anyone in a wheelchair,” she said. Yet at both places, and at two other assisted living facilities in New York City, people who made similar inquiries — but described their relatives as able to walk — were encouraged to submit applications. None of these people actually had family members who needed assisted living. They were testers, professional actors working for the nonprofit Fair Housing Justice Center to investigate whether such facilities discriminate against wheelchair users. Excerpts from their recorded conversations are included in a federal lawsuit filed against those centers, claiming they discriminate against people in wheelchairs and are violating the Fair Housing Act, the Americans with Disabilities Act and other federal laws. “People were being threatened with eviction, or actually evicted, for even part-time use of a wheelchair,” said Fred Freiberg, director of the anti-discrimination group, which brought the suit after receiving complaints from residents and families. “It’s outrageous. They were told, ‘If you’re going to use a wheelchair, you can’t live here anymore.’” Related cases have popped up for years in senior housing nationwide, including continuing care retirement communities. In 2015, for instance, the Justice Department reached settlements with a continuing care facility in Norfolk, Va., and one in Lincolnshire, Ill., for discriminating against residents with disabilities. Unlike nursing homes, which are subject to federal regulations and regular inspections, assisted and independent living facilities operate under widely varying state laws. Oklahoma and Alabama require residents to be “ambulatory,” for instance, but Kentucky allows admission of the “mobile nonambulatory,” meaning people who use walkers or wheelchairs. “Many states have similar policies, though with different language, like ‘must be able to self-evacuate,’ which is often interpreted to mean ‘no wheelchairs,’” said Susan Silverstein, a senior lawyer for the AARP Foundation, which is representing the plaintiffs. “Facilities often justify their policies by citing state laws that are ambiguous.” Administrators of the facilities named in the New York lawsuit, including Elm York Assisted Living and Madison York Assisted Living, (which share ownership with the other residence in Queens), often cited state laws as reasons to exclude wheelchair users, according to the complaint. And in this case, they appear to be correct. New York State regulations governing “adult care facilities” and Medicaid-funded assisted living programs, which all four facilities are licensed to offer, do prohibit residents who are “chronically chairfast and unable to transfer” or require assistance to transfer — even when, as in this case, the buildings have elevators. Those 40-year-old policies predate the federal laws barring discrimination based on disability, but the state has not revised them. For that reason, the lawsuit also names the state health department and commissioner, plus Gov. Andrew Cuomo, as defendants. Neither the governor’s office nor the four assisted living facilities would comment. The state’s health department said it considered “reasonable wheelchair accessibility” in adult homes a priority and that it began working with existing homes last year on “remediation plans that include appropriate upgrades.” Newly constructed adult homes, it noted, must comply with federal, state and local accessibility requirements. The suit asks that the four facilities adopt nondiscriminatory admission and retention policies, and that the state update its regulations to reflect federal law. It also seeks training and monitoring to ensure compliance. While administrators might still turn away applicants for individual reasons, they couldn’t maintain blanket rules against wheelchairs. “There’s going to be a much larger number of people in the next few years who will need assisted living, and those facilities need to be open to people,” Mr. Freiberg said. Although the assisted living industry mainly attracts people who are paying for the care themselves, “the percentage covered by Medicaid is growing,” said Eric Carlson, a lawyer at Justice in Aging, an advocacy group not involved in the lawsuit. A recent Government Accountability Office report pointed out that in 2014, Medicaid covered assisted-living services for more than 330,000 people in 48 states — part of the effort to support alternatives to expensive nursing homes. A favorable settlement or trial verdict in the New York lawsuit could bring changes in assisted living beyond Medicaid programs and beyond New York State. “Private-pay assisted living is still subject to the Fair Housing Act,” said Jota Borgmann, senior staff lawyer at Mobilization for Justice, a legal services organization and co-counsel in the case. Similar court cases have already changed assisted living regulations and practices around the country, Mr. Carlson pointed out. “It’s not like flipping a switch,” he said. “It’s step by step, but they have impact.” While the relatives that testers described to administrators were fictitious, a retired lawyer in her 60s, known in court filings only as Jane Doe because she feared she might be blackballed from care facilities, is quite real. She’s also a plaintiff in the lawsuit, along with her brother, who acts as her power of attorney. Disabled by severe osteoporosis, the plaintiff lived at VillageCare for five years, until last spring when a urinary tract infection and its complications sent her to a hospital, then to a nursing home for rehabilitation. After two months, according to the complaint, VillageCare told her she needed more assistance than it could provide, including help with “ambulation,” and told her she could not return. It began eviction proceedings, which her brother contested. In December, the facility agreed to an in-person interview and assessment. The session — including cognitive tests, sitting and standing, and taking her shoes on and off — lasted four hours. “It was grueling,” said her brother, who traveled from his Florida home to accompany her. “It was a very difficult thing, but my sister did it. She walked with her walker just fine.” But VillageCare refused to readmit her, saying she needed assistance with activities of daily living, including “locomotion.” So she remains in a nursing home, where she is discouraged from walking at all, and worries that she may never go home. “It’s very disheartening,” her brother said. “I keep telling her, ‘You’re going to be out any day,’ and I’ve been wrong.”'
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}61}]:} \PY{c+c1}{\PYZsh{} K\PYZhy{}means with N clusters}
-         \PY{n}{N} \PY{o}{=} \PY{l+m+mi}{7}
-         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{cluster} \PY{k}{import} \PY{n}{KMeans}
-         \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{N}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-         \PY{n}{km}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{} !python3 \PYZhy{}m spacy download en}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{k+kn}{import} \PY{n+nn}{spacy}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{processor} \PY{o}{=} \PY{n}{spacy}\PY{o}{.}\PY{n}{load}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{en}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{processed\PYZus{}text} \PY{o}{=} \PY{n}{processor}\PY{p}{(}\PY{n}{text}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{c+c1}{\PYZsh{} Show the most common words in the article.}
+        \PY{k+kn}{from} \PY{n+nn}{collections} \PY{k}{import} \PY{n}{Counter}
+        
+        \PY{c+c1}{\PYZsh{} all tokens that arent stop words or punctuations}
+        \PY{n}{words} \PY{o}{=} \PY{p}{[}\PY{n}{token}\PY{o}{.}\PY{n}{text} 
+                     \PY{k}{for} \PY{n}{token} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text} 
+                         \PY{k}{if} \PY{n}{token}\PY{o}{.}\PY{n}{is\PYZus{}punct} \PY{o}{!=} \PY{k+kc}{True}\PY{p}{]}
+        
+        \PY{n}{word\PYZus{}freq} \PY{o}{=} \PY{n}{Counter}\PY{p}{(}\PY{n}{words}\PY{p}{)}
+        \PY{n}{common\PYZus{}words} \PY{o}{=} \PY{n}{word\PYZus{}freq}\PY{o}{.}\PY{n}{most\PYZus{}common}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+        \PY{n}{common\PYZus{}words}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}61}]:} KMeans(algorithm='auto', copy\_x=True, init='k-means++', max\_iter=300,
-             n\_clusters=7, n\_init=10, n\_jobs=1, precompute\_distances='auto',
-             random\_state=1, tol=0.0001, verbose=0)
+{\color{outcolor}Out[{\color{outcolor}6}]:} [('the', 43),
+         ('in', 32),
+         ('and', 31),
+         ('to', 30),
+         ('a', 22),
+         ('her', 18),
+         ('for', 16),
+         ('with', 13),
+         ('living', 13),
+         ('assisted', 12)]
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}62}]:} \PY{c+c1}{\PYZsh{} review the cluster labels}
-         \PY{n+nb}{set}\PY{p}{(}\PY{n}{km}\PY{o}{.}\PY{n}{labels\PYZus{}}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}62}]:} \{0, 1, 2, 3, 4, 5, 6\}
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}63}]:} \PY{n}{X}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cluster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{n} \PY{o}{=} \PY{l+m+mi}{0}
+        \PY{k}{for} \PY{n}{sentence} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{o}{.}\PY{n}{sents}\PY{p}{:}
+            \PY{k}{for} \PY{n}{token} \PY{o+ow}{in} \PY{n}{sentence}\PY{p}{:}
+                \PY{n+nb}{print}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{n}{token}\PY{p}{,} \PY{n}{token}\PY{o}{.}\PY{n}{pos\PYZus{}} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{NOUN}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+                \PY{n}{n}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}64}]:} \PY{n}{XX} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-         \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{lat} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{lat}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{lat}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-         \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{lon} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{lon}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{lon}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}65}]:} \PY{c+c1}{\PYZsh{} calculate SC for K=7}
-         \PY{k+kn}{from} \PY{n+nn}{sklearn} \PY{k}{import} \PY{n}{metrics}
-         \PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}65}]:} 0.10349585363140311
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}107}]:} \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{cluster} \PY{k}{import} \PY{n}{DBSCAN}
-          \PY{k+kn}{from} \PY{n+nn}{tqdm} \PY{k}{import} \PY{n}{tqdm}
-          \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-          
-          \PY{n}{start}   \PY{o}{=} \PY{l+m+mf}{0.0}
-          \PY{n}{stop}    \PY{o}{=} \PY{l+m+mf}{0.45}
-          \PY{n}{step}    \PY{o}{=} \PY{l+m+mf}{0.01}
-          \PY{n}{my\PYZus{}list} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{start}\PY{p}{,} \PY{n}{stop}\PY{o}{+}\PY{n}{step}\PY{p}{,} \PY{n}{step}\PY{p}{)}
-          
-          \PY{n}{startb}   \PY{o}{=} \PY{l+m+mi}{1}
-          \PY{n}{stopb}    \PY{o}{=} \PY{l+m+mi}{10}
-          \PY{n}{stepb}    \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{2} \PY{c+c1}{\PYZsh{} To scale proportionately with epsilon increments}
-          \PY{n}{my\PYZus{}listb} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{startb}\PY{p}{,} \PY{n}{stopb}\PY{o}{+}\PY{n}{stepb}\PY{p}{,} \PY{n}{stepb}\PY{p}{)}
-          
-          
-          \PY{n}{my\PYZus{}range} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{45}\PY{p}{)}
-          
-          \PY{n}{one} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{1} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{one}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-              
-          \PY{n}{two} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{2} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{two}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-              
-          \PY{n}{three} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{3} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{three}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{four} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{4} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{four}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-              
-          \PY{n}{five} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{5} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{five}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{six} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{6} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{six}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{seven} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{7} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{seven}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{eight} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{8} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{eight}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{nine} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{9} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{nine}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-          
-          \PY{n}{ten} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{05} \PY{o}{+} \PY{n}{my\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{p}{,} \PY{n}{min\PYZus{}samples} \PY{o}{=} \PY{l+m+mi}{10} \PY{o}{+} \PY{n}{my\PYZus{}listb}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
-              \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{ten}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}\PY{p}{)}
-            
-\end{Verbatim}
-
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:10<07:34, 10.32s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:17<06:41,  9.33s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:23<05:55,  8.46s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:30<05:23,  7.89s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:36<05:00,  7.51s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:43<04:45,  7.31s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:50<04:35,  7.25s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:58<04:30,  7.31s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [01:04<04:15,  7.10s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:11<04:02,  6.93s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:18<03:58,  7.01s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:25<03:47,  6.88s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:31<03:36,  6.76s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:38<03:32,  6.84s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:45<03:23,  6.79s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:52<03:15,  6.75s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:58<03:06,  6.64s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [02:04<02:56,  6.55s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:11<02:48,  6.48s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:17<02:40,  6.44s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:24<02:35,  6.48s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:33<02:48,  7.34s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:40<02:37,  7.18s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:46<02:26,  6.98s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:53<02:17,  6.90s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [03:00<02:11,  6.90s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [03:07<02:03,  6.88s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:14<01:56,  6.88s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:20<01:49,  6.86s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:26<01:39,  6.63s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:33<01:31,  6.54s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:40<01:26,  6.68s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:46<01:19,  6.66s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:53<01:13,  6.70s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [04:00<01:06,  6.68s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [04:07<01:02,  6.91s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:16<00:58,  7.30s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:22<00:49,  7.07s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:29<00:41,  6.97s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:36<00:34,  6.96s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:44<00:29,  7.41s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:51<00:22,  7.33s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:58<00:14,  7.23s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [05:05<00:07,  7.08s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:12<00:00,  6.92s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:07<05:13,  7.12s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:13<04:56,  6.89s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:19<04:39,  6.65s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:26<04:32,  6.65s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:32<04:23,  6.59s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:39<04:15,  6.56s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:45<04:07,  6.50s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:52<04:00,  6.50s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:58<03:52,  6.44s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:04<03:47,  6.49s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:11<03:40,  6.47s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:17<03:31,  6.42s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:24<03:24,  6.41s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:30<03:18,  6.41s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:36<03:11,  6.39s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:43<03:06,  6.44s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:49<03:00,  6.43s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:56<02:53,  6.43s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:02<02:46,  6.41s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:08<02:39,  6.38s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:15<02:37,  6.55s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:22<02:31,  6.59s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:28<02:23,  6.52s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:35<02:17,  6.56s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:41<02:10,  6.51s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:48<02:02,  6.47s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:54<01:56,  6.47s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:01<01:49,  6.45s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:07<01:42,  6.43s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:13<01:36,  6.42s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:20<01:30,  6.47s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:27<01:24,  6.50s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:33<01:17,  6.47s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:39<01:11,  6.46s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:46<01:05,  6.56s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [03:53<00:58,  6.50s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [03:59<00:51,  6.49s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:06<00:45,  6.50s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:12<00:39,  6.62s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:20<00:33,  6.76s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:26<00:26,  6.67s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:33<00:20,  6.68s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:39<00:13,  6.64s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:46<00:06,  6.57s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [04:52<00:00,  6.58s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:06<04:40,  6.37s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:12<04:29,  6.27s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:18<04:23,  6.28s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:25<04:21,  6.39s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:31<04:14,  6.35s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:38<04:08,  6.38s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:44<04:00,  6.33s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:50<03:54,  6.33s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:56<03:47,  6.31s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:03<03:40,  6.31s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:09<03:34,  6.30s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:15<03:27,  6.30s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:22<03:21,  6.31s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:28<03:15,  6.31s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:34<03:09,  6.32s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:41<03:03,  6.32s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:47<02:57,  6.32s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:53<02:51,  6.35s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:00<02:45,  6.35s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:06<02:39,  6.36s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:12<02:32,  6.36s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:19<02:27,  6.40s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:25<02:21,  6.43s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:32<02:14,  6.42s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:38<02:08,  6.41s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:45<02:02,  6.43s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:51<01:55,  6.43s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [02:57<01:49,  6.42s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:04<01:42,  6.41s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:10<01:36,  6.40s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:17<01:29,  6.41s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:23<01:23,  6.41s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:30<01:16,  6.41s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:36<01:10,  6.41s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:42<01:04,  6.40s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [03:49<00:57,  6.41s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [03:55<00:51,  6.42s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:02<00:44,  6.42s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:08<00:38,  6.41s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:14<00:32,  6.42s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:21<00:25,  6.44s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:27<00:19,  6.45s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:34<00:13,  6.50s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:41<00:06,  6.54s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [04:47<00:00,  6.52s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:06<04:36,  6.29s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:12<04:26,  6.20s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:18<04:22,  6.24s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:24<04:14,  6.20s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:30<04:07,  6.18s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:36<04:00,  6.16s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:43<03:53,  6.15s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:49<03:51,  6.25s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:55<03:45,  6.26s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:02<03:39,  6.26s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:08<03:33,  6.27s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:14<03:27,  6.29s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:21<03:23,  6.35s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:27<03:17,  6.36s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:34<03:10,  6.37s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:40<03:04,  6.35s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:46<02:57,  6.36s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:52<02:51,  6.34s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [01:59<02:45,  6.35s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:05<02:38,  6.36s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:12<02:32,  6.37s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:18<02:25,  6.35s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:25<02:21,  6.43s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:31<02:15,  6.43s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:37<02:08,  6.42s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:44<02:01,  6.42s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:50<01:56,  6.49s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [02:57<01:49,  6.46s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:03<01:43,  6.46s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:10<01:36,  6.45s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:16<01:30,  6.47s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:24<01:27,  6.75s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:30<01:19,  6.65s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:36<01:12,  6.58s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:43<01:05,  6.52s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [03:50<00:58,  6.55s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [03:56<00:52,  6.60s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:03<00:45,  6.55s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:09<00:39,  6.53s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:16<00:32,  6.53s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:23<00:26,  6.66s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:29<00:20,  6.67s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:36<00:13,  6.68s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:43<00:06,  6.67s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [04:50<00:00,  6.74s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:06<04:27,  6.09s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:19,  6.04s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:17<04:12,  6.02s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:24<04:07,  6.04s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:30<04:08,  6.21s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:36<04:01,  6.19s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:43<03:55,  6.19s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:49<03:49,  6.20s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:55<03:43,  6.21s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:02<03:41,  6.32s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:08<03:36,  6.37s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:15<03:31,  6.41s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:21<03:25,  6.44s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:28<03:20,  6.45s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:34<03:17,  6.58s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:41<03:10,  6.56s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:47<03:03,  6.56s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:54<02:57,  6.56s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:01<02:51,  6.58s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:07<02:42,  6.51s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:13<02:35,  6.47s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:20<02:28,  6.44s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:26<02:21,  6.41s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:33<02:17,  6.55s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:39<02:10,  6.53s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:46<02:03,  6.49s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:52<01:56,  6.45s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:01<02:03,  7.29s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:10<02:02,  7.65s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:17<01:51,  7.43s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:25<01:49,  7.79s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:33<01:40,  7.69s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:40<01:29,  7.49s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:47<01:19,  7.20s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:53<01:09,  6.97s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [04:00<01:01,  6.88s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:06<00:54,  6.81s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:13<00:47,  6.76s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:20<00:40,  6.72s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:27<00:34,  6.82s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:34<00:27,  6.86s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:40<00:20,  6.74s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:47<00:13,  6.68s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:53<00:06,  6.61s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:00<00:00,  6.59s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:05<04:14,  5.79s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:09,  5.81s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:17<04:05,  5.85s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:23<04:02,  5.91s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:29<04:00,  6.01s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:36<03:57,  6.09s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:42<03:51,  6.08s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:48<03:46,  6.11s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:54<03:40,  6.14s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:01<03:37,  6.23s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:07<03:32,  6.25s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:13<03:26,  6.27s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:19<03:21,  6.29s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:26<03:15,  6.30s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:32<03:12,  6.41s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:39<03:04,  6.37s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:45<02:57,  6.36s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:51<02:51,  6.33s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [01:58<02:44,  6.33s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:04<02:39,  6.37s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:11<02:33,  6.38s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:17<02:27,  6.39s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:24<02:26,  6.66s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:32<02:26,  7.00s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:40<02:23,  7.17s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:47<02:17,  7.22s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:54<02:07,  7.10s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:01<02:02,  7.19s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:08<01:53,  7.07s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:15<01:44,  6.96s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:22<01:37,  6.93s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:29<01:30,  6.96s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:35<01:22,  6.89s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:42<01:15,  6.88s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:49<01:07,  6.76s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [03:55<01:00,  6.77s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:03<00:55,  6.91s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:09<00:47,  6.78s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:16<00:40,  6.69s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:22<00:33,  6.64s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:29<00:26,  6.59s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:36<00:20,  6.71s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:42<00:13,  6.62s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:48<00:06,  6.56s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [04:55<00:00,  6.54s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:05<04:17,  5.85s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:11,  5.85s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:17<04:07,  5.89s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:23<04:02,  5.92s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:29<03:58,  5.96s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:36<03:59,  6.14s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:42<03:52,  6.12s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:48<03:46,  6.11s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:54<03:41,  6.14s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:00<03:35,  6.17s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:08<03:40,  6.48s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:15<03:46,  6.87s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:22<03:39,  6.85s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:29<03:28,  6.74s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:36<03:23,  6.78s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:42<03:13,  6.67s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:49<03:09,  6.76s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:56<03:08,  6.99s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:03<02:59,  6.91s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:10<02:49,  6.77s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:17<02:48,  7.01s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:24<02:38,  6.89s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:30<02:28,  6.74s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:37<02:22,  6.80s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:44<02:16,  6.84s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:51<02:08,  6.77s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [02:57<02:00,  6.72s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:04<01:53,  6.71s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:11<01:47,  6.73s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:18<01:41,  6.75s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:24<01:34,  6.74s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:31<01:27,  6.73s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:38<01:23,  6.94s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:45<01:16,  6.93s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:52<01:09,  6.95s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [03:59<01:02,  6.97s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:07<00:57,  7.19s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:14<00:49,  7.01s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:21<00:42,  7.13s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:28<00:36,  7.23s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:36<00:29,  7.27s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:42<00:21,  7.08s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:49<00:13,  6.98s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:56<00:07,  7.01s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:04<00:00,  7.11s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:06<04:34,  6.24s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:21,  6.09s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:18<04:18,  6.15s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:25<04:22,  6.41s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:32<04:20,  6.50s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:39<04:22,  6.74s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:46<04:17,  6.78s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:52<04:04,  6.61s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:58<03:55,  6.54s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:05<03:49,  6.55s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:11<03:40,  6.47s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:17<03:32,  6.43s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:24<03:27,  6.48s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:31<03:23,  6.57s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:38<03:20,  6.68s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:45<03:16,  6.79s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:52<03:14,  6.94s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [01:59<03:06,  6.91s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:06<03:03,  7.06s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:14<02:59,  7.19s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:21<02:54,  7.29s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:29<02:50,  7.40s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:37<02:45,  7.52s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:44<02:33,  7.31s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:50<02:23,  7.17s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:57<02:14,  7.09s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [03:05<02:12,  7.36s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:12<02:02,  7.21s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:19<01:54,  7.14s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:26<01:45,  7.02s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:34<01:42,  7.34s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:42<01:39,  7.65s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:50<01:30,  7.55s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:57<01:22,  7.50s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [04:04<01:14,  7.46s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [04:12<01:05,  7.33s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:18<00:57,  7.16s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:26<00:50,  7.24s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:36<00:49,  8.18s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:43<00:38,  7.79s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:50<00:30,  7.55s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:57<00:21,  7.31s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [05:04<00:14,  7.37s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [05:11<00:07,  7.16s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:17<00:00,  6.99s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:05<04:11,  5.71s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:04,  5.69s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:17<04:05,  5.84s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:23<04:03,  5.95s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:30<04:04,  6.11s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:36<04:05,  6.29s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:43<04:02,  6.39s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:50<03:59,  6.48s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:57<04:04,  6.80s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:04<03:55,  6.73s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:10<03:47,  6.70s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:18<03:45,  6.83s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:25<03:43,  6.99s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:32<03:35,  6.94s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:39<03:29,  6.99s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:46<03:24,  7.07s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:53<03:15,  6.98s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [02:00<03:09,  7.02s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:07<03:00,  6.94s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:14<02:54,  6.98s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:21<02:45,  6.90s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:28<02:38,  6.90s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:34<02:29,  6.79s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:41<02:21,  6.76s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:48<02:18,  6.92s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:55<02:10,  6.85s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [03:01<02:02,  6.83s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:08<01:57,  6.88s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:16<01:51,  6.97s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:22<01:43,  6.89s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:29<01:35,  6.85s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:36<01:28,  6.84s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:43<01:21,  6.77s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:49<01:14,  6.81s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:57<01:10,  7.03s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [04:04<01:02,  6.95s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:11<00:55,  6.91s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:18<00:49,  7.06s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:25<00:41,  6.99s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:32<00:34,  6.91s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:38<00:27,  6.88s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:46<00:20,  6.99s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:52<00:13,  6.89s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:59<00:06,  6.97s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:06<00:00,  6.94s/it]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  0\%|          | 0/45 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  2\%|▏         | 1/45 [00:05<04:20,  5.93s/it]
-
-
-
-
-
-
-
-  4\%|▍         | 2/45 [00:11<04:14,  5.91s/it]
-
-
-
-
-
-
-
-  7\%|▋         | 3/45 [00:17<04:08,  5.93s/it]
-
-
-
-
-
-
-
-  9\%|▉         | 4/45 [00:23<04:04,  5.96s/it]
-
-
-
-
-
-
-
- 11\%|█         | 5/45 [00:30<04:06,  6.17s/it]
-
-
-
-
-
-
-
- 13\%|█▎        | 6/45 [00:37<04:10,  6.43s/it]
-
-
-
-
-
-
-
- 16\%|█▌        | 7/45 [00:45<04:17,  6.77s/it]
-
-
-
-
-
-
-
- 18\%|█▊        | 8/45 [00:51<04:07,  6.70s/it]
-
-
-
-
-
-
-
- 20\%|██        | 9/45 [00:58<04:03,  6.76s/it]
-
-
-
-
-
-
-
- 22\%|██▏       | 10/45 [01:05<03:58,  6.82s/it]
-
-
-
-
-
-
-
- 24\%|██▍       | 11/45 [01:12<03:57,  7.00s/it]
-
-
-
-
-
-
-
- 27\%|██▋       | 12/45 [01:19<03:51,  7.02s/it]
-
-
-
-
-
-
-
- 29\%|██▉       | 13/45 [01:27<03:49,  7.18s/it]
-
-
-
-
-
-
-
- 31\%|███       | 14/45 [01:34<03:39,  7.09s/it]
-
-
-
-
-
-
-
- 33\%|███▎      | 15/45 [01:41<03:30,  7.03s/it]
-
-
-
-
-
-
-
- 36\%|███▌      | 16/45 [01:47<03:20,  6.92s/it]
-
-
-
-
-
-
-
- 38\%|███▊      | 17/45 [01:54<03:14,  6.94s/it]
-
-
-
-
-
-
-
- 40\%|████      | 18/45 [02:01<03:07,  6.93s/it]
-
-
-
-
-
-
-
- 42\%|████▏     | 19/45 [02:08<02:57,  6.82s/it]
-
-
-
-
-
-
-
- 44\%|████▍     | 20/45 [02:15<02:53,  6.94s/it]
-
-
-
-
-
-
-
- 47\%|████▋     | 21/45 [02:22<02:43,  6.80s/it]
-
-
-
-
-
-
-
- 49\%|████▉     | 22/45 [02:29<02:40,  7.00s/it]
-
-
-
-
-
-
-
- 51\%|█████     | 23/45 [02:36<02:32,  6.91s/it]
-
-
-
-
-
-
-
- 53\%|█████▎    | 24/45 [02:42<02:21,  6.76s/it]
-
-
-
-
-
-
-
- 56\%|█████▌    | 25/45 [02:49<02:15,  6.76s/it]
-
-
-
-
-
-
-
- 58\%|█████▊    | 26/45 [02:56<02:08,  6.77s/it]
-
-
-
-
-
-
-
- 60\%|██████    | 27/45 [03:03<02:02,  6.83s/it]
-
-
-
-
-
-
-
- 62\%|██████▏   | 28/45 [03:10<01:56,  6.88s/it]
-
-
-
-
-
-
-
- 64\%|██████▍   | 29/45 [03:17<01:50,  6.93s/it]
-
-
-
-
-
-
-
- 67\%|██████▋   | 30/45 [03:24<01:44,  6.96s/it]
-
-
-
-
-
-
-
- 69\%|██████▉   | 31/45 [03:32<01:42,  7.29s/it]
-
-
-
-
-
-
-
- 71\%|███████   | 32/45 [03:38<01:32,  7.09s/it]
-
-
-
-
-
-
-
- 73\%|███████▎  | 33/45 [03:45<01:23,  6.96s/it]
-
-
-
-
-
-
-
- 76\%|███████▌  | 34/45 [03:52<01:15,  6.85s/it]
-
-
-
-
-
-
-
- 78\%|███████▊  | 35/45 [03:58<01:07,  6.78s/it]
-
-
-
-
-
-
-
- 80\%|████████  | 36/45 [04:05<01:00,  6.76s/it]
-
-
-
-
-
-
-
- 82\%|████████▏ | 37/45 [04:12<00:53,  6.67s/it]
-
-
-
-
-
-
-
- 84\%|████████▍ | 38/45 [04:18<00:46,  6.61s/it]
-
-
-
-
-
-
-
- 87\%|████████▋ | 39/45 [04:25<00:39,  6.62s/it]
-
-
-
-
-
-
-
- 89\%|████████▉ | 40/45 [04:31<00:33,  6.65s/it]
-
-
-
-
-
-
-
- 91\%|█████████ | 41/45 [04:38<00:26,  6.60s/it]
-
-
-
-
-
-
-
- 93\%|█████████▎| 42/45 [04:44<00:19,  6.57s/it]
-
-
-
-
-
-
-
- 96\%|█████████▌| 43/45 [04:51<00:13,  6.55s/it]
-
-
-
-
-
-
-
- 98\%|█████████▊| 44/45 [04:57<00:06,  6.52s/it]
-
-
-
-
-
-
-
-100\%|██████████| 45/45 [05:04<00:00,  6.55s/it]
-
-
-
-
-
-
-
+0 In False
+1 March False
+2 2017 False
+3 , False
+4 a False
+5 woman True
+6 met False
+7 with False
+8 the False
+9 admissions True
+10 coordinator True
+11 at False
+12 Madison False
+13 York False
+14 Assisted False
+15 Living False
+16 in False
+17 Queens False
+18 , False
+19 inquiring False
+20 about False
+21 placement True
+22 for False
+23 her False
+24 mother True
+25 - False
+26 in False
+27 - False
+28 law True
+29 , False
+30 who True
+31 was False
+32 using False
+33 a False
+34 wheelchair True
+35 while False
+36 recovering False
+37 from False
+38 hip True
+39 surgery True
+40 . False
+41 “ False
+42 Wheelchairs True
+43 are False
+44 not False
+45 allowed False
+46 in False
+47 the False
+48 facility True
+49 , False
+50 ” False
+51 the False
+52 coordinator True
+53 told False
+54 her False
+55 . False
+56 “ False
+57 Walkers False
+58 , False
+59 canes True
+60 , False
+61 rollators True
+62 , False
+63 hemi True
+64 canes True
+65 , False
+66 something True
+67 like False
+68 that False
+69 is False
+70 acceptable False
+71 . False
+72 ” False
+73 But False
+74 , False
+75 he False
+76 went False
+77 on False
+78 , False
+79 “ False
+80 we False
+81 can False
+82 not False
+83 accommodate False
+84 a False
+85 wheelchair True
+86 - False
+87 bound False
+88 patient True
+89 . False
+90 ” False
+91 In False
+92 November False
+93 , False
+94 another False
+95 woman True
+96 seeking False
+97 assisted False
+98 living True
+99 for False
+100 her False
+101 mother True
+102 - False
+103 in False
+104 - False
+105 law True
+106 emailed False
+107 the False
+108 admissions True
+109 coordinator True
+110 at False
+111 VillageCare False
+112 at False
+113 46 False
+114 \& False
+115 Ten False
+116 in False
+117 Manhattan False
+118 . False
+119 “ False
+120 We False
+121 do False
+122 not False
+123 admit False
+124 residents True
+125 on False
+126 wheelchairs True
+127 , False
+128 ” False
+129 the False
+130 coordinator True
+131 wrote False
+132 back False
+133 . False
+134 By False
+135 phone True
+136 , False
+137 the False
+138 woman True
+139 explained False
+140 that False
+141 her False
+142 mother True
+143 - False
+144 in False
+145 - False
+146 law True
+147 had False
+148 used False
+149 a False
+150 chair True
+151 for False
+152 decades True
+153 and False
+154 could False
+155 transfer False
+156 in False
+157 and False
+158 out False
+159 without False
+160 assistance True
+161 . False
+162 The False
+163 coordinator True
+164 would False
+165 n’t False
+166 budge False
+167 . False
+168 “ False
+169 We False
+170 could False
+171 not False
+172 accept False
+173 anyone True
+174 in False
+175 a False
+176 wheelchair True
+177 , False
+178 ” False
+179 she False
+180 said False
+181 . False
+182 Yet False
+183 at False
+184 both False
+185 places True
+186 , False
+187 and False
+188 at False
+189 two False
+190 other False
+191 assisted False
+192 living False
+193 facilities True
+194 in False
+195 New False
+196 York False
+197 City False
+198 , False
+199 people True
+200 who True
+201 made False
+202 similar False
+203 inquiries True
+204 — False
+205 but False
+206 described False
+207 their False
+208 relatives True
+209 as False
+210 able False
+211 to False
+212 walk False
+213 — False
+214 were False
+215 encouraged False
+216 to False
+217 submit False
+218 applications True
+219 . False
+220 None True
+221 of False
+222 these False
+223 people True
+224 actually False
+225 had False
+226 family True
+227 members True
+228 who True
+229 needed False
+230 assisted False
+231 living True
+232 . False
+233 They False
+234 were False
+235 testers True
+236 , False
+237 professional False
+238 actors True
+239 working False
+240 for False
+241 the False
+242 nonprofit False
+243 Fair False
+244 Housing False
+245 Justice False
+246 Center False
+247 to False
+248 investigate False
+249 whether False
+250 such False
+251 facilities True
+252 discriminate False
+253 against False
+254 wheelchair True
+255 users True
+256 . False
+257 Excerpts True
+258 from False
+259 their False
+260 recorded False
+261 conversations True
+262 are False
+263 included False
+264 in False
+265 a False
+266 federal False
+267 lawsuit True
+268 filed False
+269 against False
+270 those False
+271 centers True
+272 , False
+273 claiming False
+274 they False
+275 discriminate False
+276 against False
+277 people True
+278 in False
+279 wheelchairs True
+280 and False
+281 are False
+282 violating False
+283 the False
+284 Fair False
+285 Housing False
+286 Act False
+287 , False
+288 the False
+289 Americans False
+290 with False
+291 Disabilities False
+292 Act False
+293 and False
+294 other False
+295 federal False
+296 laws True
+297 . False
+298 “ False
+299 People True
+300 were False
+301 being False
+302 threatened False
+303 with False
+304 eviction True
+305 , False
+306 or False
+307 actually False
+308 evicted False
+309 , False
+310 for False
+311 even False
+312 part False
+313 - False
+314 time True
+315 use True
+316 of False
+317 a False
+318 wheelchair True
+319 , False
+320 ” False
+321 said False
+322 Fred False
+323 Freiberg False
+324 , False
+325 director True
+326 of False
+327 the False
+328 anti False
+329 - False
+330 discrimination True
+331 group True
+332 , False
+333 which False
+334 brought False
+335 the False
+336 suit True
+337 after False
+338 receiving False
+339 complaints True
+340 from False
+341 residents True
+342 and False
+343 families True
+344 . False
+345 “ False
+346 It False
+347 ’s False
+348 outrageous False
+349 . False
+350 They False
+351 were False
+352 told False
+353 , False
+354 ‘ False
+355 If False
+356 you False
+357 ’re False
+358 going False
+359 to False
+360 use False
+361 a False
+362 wheelchair True
+363 , False
+364 you False
+365 ca False
+366 n’t False
+367 live False
+368 here False
+369 anymore.’ True
+370 ” False
+371 Related False
+372 cases True
+373 have False
+374 popped False
+375 up False
+376 for False
+377 years True
+378 in False
+379 senior False
+380 housing True
+381 nationwide False
+382 , False
+383 including False
+384 continuing False
+385 care True
+386 retirement True
+387 communities True
+388 . False
+389 In False
+390 2015 False
+391 , False
+392 for False
+393 instance True
+394 , False
+395 the False
+396 Justice False
+397 Department False
+398 reached False
+399 settlements True
+400 with False
+401 a False
+402 continuing False
+403 care True
+404 facility True
+405 in False
+406 Norfolk False
+407 , False
+408 Va. False
+409 , False
+410 and False
+411 one False
+412 in False
+413 Lincolnshire False
+414 , False
+415 Ill. False
+416 , False
+417 for False
+418 discriminating False
+419 against False
+420 residents True
+421 with False
+422 disabilities True
+423 . False
+424 Unlike False
+425 nursing True
+426 homes True
+427 , False
+428 which False
+429 are False
+430 subject False
+431 to False
+432 federal False
+433 regulations True
+434 and False
+435 regular False
+436 inspections True
+437 , False
+438 assisted False
+439 and False
+440 independent False
+441 living True
+442 facilities True
+443 operate False
+444 under False
+445 widely False
+446 varying False
+447 state True
+448 laws True
+449 . False
+450 Oklahoma False
+451 and False
+452 Alabama False
+453 require False
+454 residents True
+455 to False
+456 be False
+457 “ False
+458 ambulatory False
+459 , False
+460 ” False
+461 for False
+462 instance True
+463 , False
+464 but False
+465 Kentucky False
+466 allows False
+467 admission True
+468 of False
+469 the False
+470 “ False
+471 mobile False
+472 nonambulatory True
+473 , False
+474 ” False
+475 meaning False
+476 people True
+477 who True
+478 use False
+479 walkers True
+480 or False
+481 wheelchairs True
+482 . False
+483 “ False
+484 Many False
+485 states True
+486 have False
+487 similar False
+488 policies True
+489 , False
+490 though False
+491 with False
+492 different False
+493 language True
+494 , False
+495 like False
+496 ‘ False
+497 must False
+498 be False
+499 able False
+500 to False
+501 self True
+502 - False
+503 evacuate,’ False
+504 which False
+505 is False
+506 often False
+507 interpreted False
+508 to False
+509 mean False
+510 ‘ False
+511 no False
+512 wheelchairs,’ True
+513 ” False
+514 said False
+515 Susan False
+516 Silverstein False
+517 , False
+518 a False
+519 senior False
+520 lawyer True
+521 for False
+522 the False
+523 AARP False
+524 Foundation False
+525 , False
+526 which False
+527 is False
+528 representing False
+529 the False
+530 plaintiffs True
+531 . False
+532 “ False
+533 Facilities True
+534 often False
+535 justify False
+536 their False
+537 policies True
+538 by False
+539 citing False
+540 state True
+541 laws True
+542 that False
+543 are False
+544 ambiguous False
+545 . False
+546 ” False
+547 Administrators True
+548 of False
+549 the False
+550 facilities True
+551 named False
+552 in False
+553 the False
+554 New False
+555 York False
+556 lawsuit True
+557 , False
+558 including False
+559 Elm False
+560 York False
+561 Assisted False
+562 Living False
+563 and False
+564 Madison False
+565 York False
+566 Assisted False
+567 Living False
+568 , False
+569 ( False
+570 which False
+571 share False
+572 ownership True
+573 with False
+574 the False
+575 other False
+576 residence True
+577 in False
+578 Queens False
+579 ) False
+580 , False
+581 often False
+582 cited False
+583 state True
+584 laws True
+585 as False
+586 reasons True
+587 to False
+588 exclude False
+589 wheelchair True
+590 users True
+591 , False
+592 according False
+593 to False
+594 the False
+595 complaint True
+596 . False
+597 And False
+598 in False
+599 this False
+600 case True
+601 , False
+602 they False
+603 appear False
+604 to False
+605 be False
+606 correct False
+607 . False
+608 New False
+609 York False
+610 State False
+611 regulations True
+612 governing False
+613 “ False
+614 adult True
+615 care True
+616 facilities True
+617 ” False
+618 and False
+619 Medicaid False
+620 - False
+621 funded False
+622 assisted False
+623 living True
+624 programs True
+625 , False
+626 which False
+627 all False
+628 four False
+629 facilities True
+630 are False
+631 licensed False
+632 to False
+633 offer False
+634 , False
+635 do False
+636 prohibit True
+637 residents True
+638 who True
+639 are False
+640 “ False
+641 chronically False
+642 chairfast False
+643 and False
+644 unable False
+645 to False
+646 transfer False
+647 ” False
+648 or False
+649 require False
+650 assistance True
+651 to False
+652 transfer False
+653 — False
+654 even False
+655 when False
+656 , False
+657 as False
+658 in False
+659 this False
+660 case True
+661 , False
+662 the False
+663 buildings True
+664 have False
+665 elevators True
+666 . False
+667 Those False
+668 40-year False
+669 - False
+670 old False
+671 policies True
+672 predate False
+673 the False
+674 federal False
+675 laws True
+676 barring False
+677 discrimination True
+678 based False
+679 on False
+680 disability True
+681 , False
+682 but False
+683 the False
+684 state True
+685 has False
+686 not False
+687 revised False
+688 them False
+689 . False
+690 For False
+691 that False
+692 reason True
+693 , False
+694 the False
+695 lawsuit True
+696 also False
+697 names False
+698 the False
+699 state True
+700 health True
+701 department True
+702 and False
+703 commissioner True
+704 , False
+705 plus False
+706 Gov. False
+707 Andrew False
+708 Cuomo False
+709 , False
+710 as False
+711 defendants True
+712 . False
+713 Neither False
+714 the False
+715 governor True
+716 ’s False
+717 office True
+718 nor False
+719 the False
+720 four False
+721 assisted False
+722 living True
+723 facilities True
+724 would False
+725 comment False
+726 . False
+727 The False
+728 state True
+729 ’s False
+730 health True
+731 department True
+732 said False
+733 it False
+734 considered False
+735 “ False
+736 reasonable False
+737 wheelchair True
+738 accessibility True
+739 ” False
+740 in False
+741 adult True
+742 homes True
+743 a False
+744 priority True
+745 and False
+746 that False
+747 it False
+748 began False
+749 working False
+750 with False
+751 existing False
+752 homes True
+753 last False
+754 year True
+755 on False
+756 “ False
+757 remediation True
+758 plans True
+759 that False
+760 include False
+761 appropriate False
+762 upgrades True
+763 . False
+764 ” False
+765 Newly False
+766 constructed False
+767 adult True
+768 homes True
+769 , False
+770 it False
+771 noted False
+772 , False
+773 must False
+774 comply False
+775 with False
+776 federal False
+777 , False
+778 state True
+779 and False
+780 local False
+781 accessibility True
+782 requirements True
+783 . False
+784 The False
+785 suit True
+786 asks False
+787 that False
+788 the False
+789 four False
+790 facilities True
+791 adopt False
+792 nondiscriminatory False
+793 admission True
+794 and False
+795 retention True
+796 policies True
+797 , False
+798 and False
+799 that False
+800 the False
+801 state True
+802 update False
+803 its False
+804 regulations True
+805 to False
+806 reflect False
+807 federal False
+808 law True
+809 . False
+810 It False
+811 also False
+812 seeks False
+813 training True
+814 and False
+815 monitoring True
+816 to False
+817 ensure False
+818 compliance True
+819 . False
+820 While False
+821 administrators True
+822 might False
+823 still False
+824 turn False
+825 away False
+826 applicants True
+827 for False
+828 individual False
+829 reasons True
+830 , False
+831 they False
+832 could False
+833 n’t False
+834 maintain False
+835 blanket True
+836 rules True
+837 against False
+838 wheelchairs True
+839 . False
+840 “ False
+841 There False
+842 ’s False
+843 going False
+844 to False
+845 be False
+846 a False
+847 much False
+848 larger False
+849 number True
+850 of False
+851 people True
+852 in False
+853 the False
+854 next False
+855 few False
+856 years True
+857 who True
+858 will False
+859 need False
+860 assisted False
+861 living True
+862 , False
+863 and False
+864 those False
+865 facilities True
+866 need False
+867 to False
+868 be False
+869 open False
+870 to False
+871 people True
+872 , False
+873 ” False
+874 Mr. False
+875 Freiberg False
+876 said False
+877 . False
+878 Although False
+879 the False
+880 assisted False
+881 living True
+882 industry True
+883 mainly False
+884 attracts False
+885 people True
+886 who True
+887 are False
+888 paying False
+889 for False
+890 the False
+891 care True
+892 themselves False
+893 , False
+894 “ False
+895 the False
+896 percentage True
+897 covered False
+898 by False
+899 Medicaid False
+900 is False
+901 growing False
+902 , False
+903 ” False
+904 said False
+905 Eric False
+906 Carlson False
+907 , False
+908 a False
+909 lawyer True
+910 at False
+911 Justice False
+912 in False
+913 Aging False
+914 , False
+915 an False
+916 advocacy True
+917 group True
+918 not False
+919 involved False
+920 in False
+921 the False
+922 lawsuit True
+923 . False
+924 A False
+925 recent False
+926 Government False
+927 Accountability False
+928 Office False
+929 report True
+930 pointed False
+931 out False
+932 that False
+933 in False
+934 2014 False
+935 , False
+936 Medicaid False
+937 covered False
+938 assisted False
+939 - False
+940 living True
+941 services True
+942 for False
+943 more False
+944 than False
+945 330,000 False
+946 people True
+947 in False
+948 48 False
+949 states True
+950 — False
+951 part True
+952 of False
+953 the False
+954 effort True
+955 to False
+956 support False
+957 alternatives True
+958 to False
+959 expensive False
+960 nursing True
+961 homes True
+962 . False
+963 A False
+964 favorable False
+965 settlement True
+966 or False
+967 trial True
+968 verdict True
+969 in False
+970 the False
+971 New False
+972 York False
+973 lawsuit True
+974 could False
+975 bring False
+976 changes True
+977 in False
+978 assisted False
+979 living True
+980 beyond False
+981 Medicaid False
+982 programs True
+983 and False
+984 beyond False
+985 New False
+986 York False
+987 State False
+988 . False
+989 “ False
+990 Private False
+991 - False
+992 pay True
+993 assisted False
+994 living True
+995 is False
+996 still False
+997 subject False
+998 to False
+999 the False
+1000 Fair False
+1001 Housing False
+1002 Act False
+1003 , False
+1004 ” False
+1005 said False
+1006 Jota False
+1007 Borgmann False
+1008 , False
+1009 senior False
+1010 staff True
+1011 lawyer True
+1012 at False
+1013 Mobilization False
+1014 for False
+1015 Justice False
+1016 , False
+1017 a False
+1018 legal False
+1019 services True
+1020 organization True
+1021 and False
+1022 co True
+1023 - False
+1024 counsel True
+1025 in False
+1026 the False
+1027 case True
+1028 . False
+1029 Similar False
+1030 court True
+1031 cases True
+1032 have False
+1033 already False
+1034 changed False
+1035 assisted False
+1036 living True
+1037 regulations True
+1038 and False
+1039 practices True
+1040 around False
+1041 the False
+1042 country True
+1043 , False
+1044 Mr. False
+1045 Carlson False
+1046 pointed False
+1047 out False
+1048 . False
+1049 “ False
+1050 It False
+1051 ’s False
+1052 not False
+1053 like False
+1054 flipping False
+1055 a False
+1056 switch True
+1057 , False
+1058 ” False
+1059 he False
+1060 said False
+1061 . False
+1062 “ False
+1063 It False
+1064 ’s False
+1065 step True
+1066 by False
+1067 step True
+1068 , False
+1069 but False
+1070 they False
+1071 have False
+1072 impact True
+1073 . False
+1074 ” False
+1075 While False
+1076 the False
+1077 relatives True
+1078 that False
+1079 testers True
+1080 described False
+1081 to False
+1082 administrators True
+1083 were False
+1084 fictitious False
+1085 , False
+1086 a False
+1087 retired False
+1088 lawyer True
+1089 in False
+1090 her False
+1091 60s True
+1092 , False
+1093 known False
+1094 in False
+1095 court True
+1096 filings True
+1097 only False
+1098 as False
+1099 Jane False
+1100 Doe False
+1101 because False
+1102 she False
+1103 feared False
+1104 she False
+1105 might False
+1106 be False
+1107 blackballed False
+1108 from False
+1109 care True
+1110 facilities True
+1111 , False
+1112 is False
+1113 quite False
+1114 real False
+1115 . False
+1116 She False
+1117 ’s False
+1118 also False
+1119 a False
+1120 plaintiff True
+1121 in False
+1122 the False
+1123 lawsuit True
+1124 , False
+1125 along False
+1126 with False
+1127 her False
+1128 brother True
+1129 , False
+1130 who True
+1131 acts False
+1132 as False
+1133 her False
+1134 power True
+1135 of False
+1136 attorney True
+1137 . False
+1138 Disabled False
+1139 by False
+1140 severe False
+1141 osteoporosis True
+1142 , False
+1143 the False
+1144 plaintiff True
+1145 lived False
+1146 at False
+1147 VillageCare False
+1148 for False
+1149 five False
+1150 years True
+1151 , False
+1152 until False
+1153 last False
+1154 spring True
+1155 when False
+1156 a False
+1157 urinary False
+1158 tract True
+1159 infection True
+1160 and False
+1161 its False
+1162 complications True
+1163 sent False
+1164 her False
+1165 to False
+1166 a False
+1167 hospital True
+1168 , False
+1169 then False
+1170 to False
+1171 a False
+1172 nursing True
+1173 home True
+1174 for False
+1175 rehabilitation True
+1176 . False
+1177 After False
+1178 two False
+1179 months True
+1180 , False
+1181 according False
+1182 to False
+1183 the False
+1184 complaint True
+1185 , False
+1186 VillageCare False
+1187 told False
+1188 her False
+1189 she False
+1190 needed False
+1191 more False
+1192 assistance True
+1193 than False
+1194 it False
+1195 could False
+1196 provide False
+1197 , False
+1198 including False
+1199 help True
+1200 with False
+1201 “ False
+1202 ambulation True
+1203 , False
+1204 ” False
+1205 and False
+1206 told False
+1207 her False
+1208 she False
+1209 could False
+1210 not False
+1211 return False
+1212 . False
+1213 It False
+1214 began False
+1215 eviction True
+1216 proceedings True
+1217 , False
+1218 which False
+1219 her False
+1220 brother True
+1221 contested False
+1222 . False
+1223 In False
+1224 December False
+1225 , False
+1226 the False
+1227 facility True
+1228 agreed False
+1229 to False
+1230 an False
+1231 in False
+1232 - False
+1233 person True
+1234 interview True
+1235 and False
+1236 assessment True
+1237 . False
+1238 The False
+1239 session True
+1240 — False
+1241 including False
+1242 cognitive False
+1243 tests True
+1244 , False
+1245 sitting False
+1246 and False
+1247 standing False
+1248 , False
+1249 and False
+1250 taking False
+1251 her False
+1252 shoes True
+1253 on False
+1254 and False
+1255 off False
+1256 — False
+1257 lasted False
+1258 four False
+1259 hours True
+1260 . False
+1261 “ False
+1262 It False
+1263 was False
+1264 grueling False
+1265 , False
+1266 ” False
+1267 said False
+1268 her False
+1269 brother True
+1270 , False
+1271 who True
+1272 traveled False
+1273 from False
+1274 his False
+1275 Florida False
+1276 home True
+1277 to False
+1278 accompany False
+1279 her False
+1280 . False
+1281 “ False
+1282 It False
+1283 was False
+1284 a False
+1285 very False
+1286 difficult False
+1287 thing True
+1288 , False
+1289 but False
+1290 my False
+1291 sister True
+1292 did False
+1293 it False
+1294 . False
+1295 She False
+1296 walked False
+1297 with False
+1298 her False
+1299 walker True
+1300 just False
+1301 fine False
+1302 . False
+1303 ” False
+1304 But False
+1305 VillageCare False
+1306 refused False
+1307 to False
+1308 readmit False
+1309 her False
+1310 , False
+1311 saying False
+1312 she False
+1313 needed False
+1314 assistance True
+1315 with False
+1316 activities True
+1317 of False
+1318 daily False
+1319 living True
+1320 , False
+1321 including False
+1322 “ False
+1323 locomotion True
+1324 . False
+1325 ” False
+1326 So False
+1327 she False
+1328 remains False
+1329 in False
+1330 a False
+1331 nursing True
+1332 home True
+1333 , False
+1334 where False
+1335 she False
+1336 is False
+1337 discouraged False
+1338 from False
+1339 walking False
+1340 at False
+1341 all False
+1342 , False
+1343 and False
+1344 worries True
+1345 that False
+1346 she False
+1347 may False
+1348 never False
+1349 go False
+1350 home False
+1351 . False
+1352 “ False
+1353 It False
+1354 ’s False
+1355 very False
+1356 disheartening False
+1357 , False
+1358 ” False
+1359 her False
+1360 brother True
+1361 said False
+1362 . False
+1363 “ False
+1364 I False
+1365 keep False
+1366 telling False
+1367 her False
+1368 , False
+1369 ‘ False
+1370 You False
+1371 ’re False
+1372 going False
+1373 to False
+1374 be False
+1375 out False
+1376 any False
+1377 day,’ True
+1378 and False
+1379 I False
+1380 ’ve False
+1381 been False
+1382 wrong False
+1383 . False
+1384 ” False
 
     \end{Verbatim}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}109}]:} \PY{c+c1}{\PYZsh{} plot the results}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{,} \PY{n}{one}\PY{p}{,} \PY{n}{two}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{,} \PY{n}{three}\PY{p}{,} \PY{n}{four}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{,} \PY{n}{five}\PY{p}{,} \PY{n}{six}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{,} \PY{n}{seven}\PY{p}{,} \PY{n}{eight}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{my\PYZus{}range}\PY{p}{,} \PY{n}{nine}\PY{p}{,} \PY{n}{ten}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Number of Epsilon Increase}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Silhouette Coefficient}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \subsection{2. Clustering your own data}\label{clustering-your-own-data}
-
-Using your own data, find relevant clusters/groups within your data. If
-your data is labeled already, with a class that you are attempting to
-predict, be sure to not use it in fitting/training/predicting.
-
-You may use the labels to compare with predictions to show how well the
-clustering performed using one of the clustering metrics
-(http://scikit-learn.org/stable/modules/clustering.html\#clustering-performance-evaluation).
-
-If you don't have labels, use the silhouette coefficient to show
-performance. Find the optimal fit for your data but you don't need to be
-as exhaustive as above.
-
-Additionally, show the clusters in 2D and 3D plots.
-
-For bonus, try using PCA first to condense your data from N columns to
-less than N.
-
-Two items are expected: - Metric Evaluation Plot - Plots of the
-clustered data
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}142}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-          \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-          \PY{o}{\PYZpc{}}\PY{k}{matplotlib} notebook
-          \PY{k+kn}{from} \PY{n+nn}{mpl\PYZus{}toolkits}\PY{n+nn}{.}\PY{n+nn}{mplot3d} \PY{k}{import} \PY{n}{Axes3D}
-          \PY{k+kn}{from} \PY{n+nn}{sklearn} \PY{k}{import} \PY{n}{decomposition}
-          \PY{k+kn}{from} \PY{n+nn}{sklearn} \PY{k}{import} \PY{n}{datasets}
-          \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
-          \PY{k+kn}{import} \PY{n+nn}{seaborn}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{font.size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{8}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{8.0}\PY{p}{,} \PY{l+m+mf}{7.0}\PY{p}{)}
-          
-          \PY{n}{centers} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}
-          \PY{n}{wine} \PY{o}{=} \PY{n}{datasets}\PY{o}{.}\PY{n}{load\PYZus{}wine}\PY{p}{(}\PY{p}{)}
-          \PY{n}{X} \PY{o}{=} \PY{n}{wine}\PY{o}{.}\PY{n}{data}
-          \PY{n}{y} \PY{o}{=} \PY{n}{wine}\PY{o}{.}\PY{n}{target}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}
-          \PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n}{fig}\PY{p}{,} \PY{n}{rect}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{95}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{elev}\PY{o}{=}\PY{l+m+mi}{48}\PY{p}{,} \PY{n}{azim}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{cla}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{pca} \PY{o}{=} \PY{n}{decomposition}\PY{o}{.}\PY{n}{PCA}\PY{p}{(}\PY{n}{n\PYZus{}components}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{)}
-          \PY{n}{pca}\PY{o}{.}\PY{n}{fit\PYZus{}transform}
-          \PY{n}{pca}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{)}
-          \PY{n}{X} \PY{o}{=} \PY{n}{pca}\PY{o}{.}\PY{n}{transform}\PY{p}{(}\PY{n}{X}\PY{p}{)}
-          
-          \PY{k}{for} \PY{n}{name}\PY{p}{,} \PY{n}{label} \PY{o+ow}{in} \PY{p}{[}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}0}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{]}\PY{p}{:}
-              \PY{n}{ax}\PY{o}{.}\PY{n}{text3D}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}
-                        \PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)} \PY{o}{+} \PY{l+m+mf}{1.5}\PY{p}{,}
-                        \PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{name}\PY{p}{,}
-                        \PY{n}{horizontalalignment}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
-                        \PY{n}{bbox}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n}{alpha}\PY{o}{=}\PY{o}{.}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{edgecolor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{facecolor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-          \PY{c+c1}{\PYZsh{} Reorder the labels to have colors matching the cluster results}
-          \PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{choose}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{float}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{y}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Paired}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}xaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}yaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}zaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Magnesium}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Flavinoids}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Alcohol}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}143}]:} \PY{n}{centers} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}
-          \PY{n}{wine} \PY{o}{=} \PY{n}{datasets}\PY{o}{.}\PY{n}{load\PYZus{}iris}\PY{p}{(}\PY{p}{)}
-          \PY{n}{X} \PY{o}{=} \PY{n}{wine}\PY{o}{.}\PY{n}{data}
-          \PY{n}{y} \PY{o}{=} \PY{n}{wine}\PY{o}{.}\PY{n}{target}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}
-          \PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n}{fig}\PY{p}{,} \PY{n}{rect}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{95}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{elev}\PY{o}{=}\PY{l+m+mi}{48}\PY{p}{,} \PY{n}{azim}\PY{o}{=}\PY{l+m+mi}{140}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{cla}\PY{p}{(}\PY{p}{)}
-          
-          \PY{k}{for} \PY{n}{name}\PY{p}{,} \PY{n}{label} \PY{o+ow}{in} \PY{p}{[}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}0}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{class\PYZus{}2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{]}\PY{p}{:}
-              \PY{n}{ax}\PY{o}{.}\PY{n}{text3D}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}
-                        \PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)} \PY{o}{+} \PY{l+m+mf}{1.5}\PY{p}{,}
-                        \PY{n}{X}\PY{p}{[}\PY{n}{y} \PY{o}{==} \PY{n}{label}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{name}\PY{p}{,}
-                        \PY{n}{horizontalalignment}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
-                        \PY{n}{bbox}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n}{alpha}\PY{o}{=}\PY{o}{.}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{edgecolor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{facecolor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-          \PY{c+c1}{\PYZsh{} Reorder the labels to have colors matching the cluster results}
-          \PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{choose}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{float}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{y}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Paired}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}xaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}yaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{w\PYZus{}zaxis}\PY{o}{.}\PY{n}{set\PYZus{}ticklabels}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Magnesium}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Flavinoids}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Alcohol}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}171}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{font.size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{12}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{8.0}\PY{p}{,} \PY{l+m+mf}{5.0}\PY{p}{)}
-          
-          \PY{n}{X} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../data/Credit.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Unnamed: 0}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Student}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Married}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Ethnicity}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{axis} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{X}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{}K\PYZhy{}means with N clusters}
-          \PY{n}{N} \PY{o}{=} \PY{l+m+mi}{7}
-          \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{cluster} \PY{k}{import} \PY{n}{KMeans}
-          \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{N}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{km}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{} review the cluster labels}
-          \PY{n+nb}{set}\PY{p}{(}\PY{n}{km}\PY{o}{.}\PY{n}{labels\PYZus{}}\PY{p}{)}
-          
-          \PY{n}{X}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cluster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X}\PY{p}{)}
-          \PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}
-          \PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n}{fig}\PY{p}{,} \PY{n}{rect}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{95}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{elev}\PY{o}{=}\PY{l+m+mi}{90}\PY{p}{,} \PY{n}{azim}\PY{o}{=}\PY{l+m+mi}{270}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{cla}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{} Scores are grouped in bands and by the increment of 100 until it reaches 600.}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}148}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{8.0}\PY{p}{,} \PY{l+m+mf}{20.0}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{} Expanded 2D view}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}172}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{8.0}\PY{p}{,} \PY{l+m+mf}{5.0}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{} Age and Income, not so much related among the credit data population}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}150}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-          
-          \PY{c+c1}{\PYZsh{} The same goes for Rating and Income}
-          \PY{c+c1}{\PYZsh{} What\PYZsq{}s more interesting in this plot is that there are hollow areas between the color bands}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}173}]:} \PY{n}{XX} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Income} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Rating} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Age} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{N}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cluster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Age}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}174}]:} \PY{n}{XX} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Income} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Rating} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Age} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{N}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cluster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}175}]:} \PY{n}{XX} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Income} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Income}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Rating} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{Age} \PY{o}{\PYZhy{}} \PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{X}\PY{o}{.}\PY{n}{Age}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{N}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-          \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cluster}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-          
-          \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Age}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}176}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}
-          \PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n}{fig}\PY{p}{,} \PY{n}{rect}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{95}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{elev}\PY{o}{=}\PY{l+m+mi}{48}\PY{p}{,} \PY{n}{azim}\PY{o}{=}\PY{l+m+mi}{140}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{cla}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}155}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{XX}\PY{o}{.}\PY{n}{Rating}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{1000}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}155}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x117d8e240>
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}156}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{o}{.}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}156}]:} <matplotlib.collections.PathCollection at 0x1a27527048>
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}168}]:} \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{cluster} \PY{k}{import} \PY{n}{DBSCAN}
-          \PY{n}{dbscan} \PY{o}{=} \PY{n}{DBSCAN}\PY{p}{(}\PY{n}{eps}\PY{o}{=}\PY{o}{.}\PY{l+m+mi}{12}\PY{p}{)}
-          \PY{n}{XX}\PY{o}{.}\PY{n}{cluster} \PY{o}{=} \PY{n}{dbscan}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-          \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Show the most common words under a part of speech. (i.e. NOUN: \PYZob{}\PYZsq{}Bob\PYZsq{}:12, \PYZsq{}Alice\PYZsq{}:4,\PYZcb{})}
+        \PY{n}{nouns} \PY{o}{=} \PY{p}{[}\PY{n}{token}\PY{o}{.}\PY{n}{text} 
+                     \PY{k}{for} \PY{n}{token} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text} 
+                         \PY{k}{if} \PY{n}{token}\PY{o}{.}\PY{n}{is\PYZus{}stop} \PY{o}{!=} \PY{k+kc}{True} 
+                         \PY{o+ow}{and} \PY{n}{token}\PY{o}{.}\PY{n}{is\PYZus{}punct} \PY{o}{!=} \PY{k+kc}{True} 
+                         \PY{o+ow}{and} \PY{n}{token}\PY{o}{.}\PY{n}{pos\PYZus{}} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{NOUN}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+        
+        \PY{n}{noun\PYZus{}freq} \PY{o}{=} \PY{n}{Counter}\PY{p}{(}\PY{n}{nouns}\PY{p}{)}
+        \PY{n}{common\PYZus{}nouns} \PY{o}{=} \PY{n}{noun\PYZus{}freq}\PY{o}{.}\PY{n}{most\PYZus{}common}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+        \PY{n}{common\PYZus{}nouns}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}168}]:} -1    400
-          Name: cluster, dtype: int64
+{\color{outcolor}Out[{\color{outcolor}8}]:} [('living', 12),
+         ('facilities', 10),
+         ('wheelchair', 8),
+         ('people', 8),
+         ('state', 8),
+         ('lawsuit', 6),
+         ('coordinator', 5),
+         ('residents', 5),
+         ('laws', 5),
+         ('care', 5)]
 \end{Verbatim}
             
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}158}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}
-          \PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n}{fig}\PY{p}{,} \PY{n}{rect}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{95}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{elev}\PY{o}{=}\PY{l+m+mi}{48}\PY{p}{,} \PY{n}{azim}\PY{o}{=}\PY{l+m+mi}{140}\PY{p}{)}
-          
-          \PY{n}{plt}\PY{o}{.}\PY{n}{cla}\PY{p}{(}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}159}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Rating}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}159}]:} <matplotlib.collections.PathCollection at 0x1a2792c198>
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}160}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{XX}\PY{o}{.}\PY{n}{Income}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{Age}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Paired}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\end{Verbatim}
-
-
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
-
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
-
-    
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}160}]:} <matplotlib.collections.PathCollection at 0x1a28998780>
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}177}]:} \PY{c+c1}{\PYZsh{} calculate SC for K=7}
-          \PY{k+kn}{from} \PY{n+nn}{sklearn} \PY{k}{import} \PY{n}{metrics}
-          \PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}177}]:} 0.0736170561074945
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}178}]:} \PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{XX}\PY{o}{.}\PY{n}{cluster}\PY{p}{)}
-\end{Verbatim}
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}178}]:} 0.3183053475041708
-\end{Verbatim}
-            
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}179}]:} \PY{k+kn}{from} \PY{n+nn}{tqdm} \PY{k}{import} \PY{n}{tqdm}
-          
-          \PY{c+c1}{\PYZsh{} calculate SC for K=2 through K=19}
-          \PY{n}{k\PYZus{}range} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{40}\PY{p}{)}
-          \PY{n}{scores} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-          \PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{k\PYZus{}range}\PY{p}{)}\PY{p}{:}
-              \PY{n}{km} \PY{o}{=} \PY{n}{KMeans}\PY{p}{(}\PY{n}{n\PYZus{}clusters}\PY{o}{=}\PY{n}{k}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-              \PY{n}{labels} \PY{o}{=} \PY{n}{km}\PY{o}{.}\PY{n}{fit\PYZus{}predict}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
-              \PY{n}{scores}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{metrics}\PY{o}{.}\PY{n}{silhouette\PYZus{}score}\PY{p}{(}\PY{n}{XX}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Income}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Age}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{n}{labels}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}30}]:} \PY{c+c1}{\PYZsh{} Find a subject/object relationship through the dependency parser in any sentence.}
+         \PY{k}{def} \PY{n+nf}{pr\PYZus{}tree}\PY{p}{(}\PY{n}{word}\PY{p}{,} \PY{n}{level}\PY{p}{)}\PY{p}{:}
+             \PY{k}{if} \PY{n}{word}\PY{o}{.}\PY{n}{is\PYZus{}punct}\PY{p}{:}
+                 \PY{k}{return}
+             \PY{k}{for} \PY{n}{child} \PY{o+ow}{in} \PY{n}{word}\PY{o}{.}\PY{n}{lefts}\PY{p}{:}
+                 \PY{n}{pr\PYZus{}tree}\PY{p}{(}\PY{n}{child}\PY{p}{,} \PY{n}{level}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}t}\PY{l+s+s1}{\PYZsq{}}\PY{o}{*} \PY{n}{level} \PY{o}{+} \PY{n}{word}\PY{o}{.}\PY{n}{text} \PY{o}{+} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ \PYZhy{} }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{word}\PY{o}{.}\PY{n}{dep\PYZus{}}\PY{p}{)}
+             \PY{k}{for} \PY{n}{child} \PY{o+ow}{in} \PY{n}{word}\PY{o}{.}\PY{n}{rights}\PY{p}{:}
+                 \PY{n}{pr\PYZus{}tree}\PY{p}{(}\PY{n}{child}\PY{p}{,} \PY{n}{level}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}
+                 
+         \PY{k}{for} \PY{n}{sentence} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{o}{.}\PY{n}{noun\PYZus{}chunks}\PY{p}{:} \PY{c+c1}{\PYZsh{} changed .sents to .noun\PYZus{}chunks to narrow parsing}
+             \PY{n}{pr\PYZus{}tree}\PY{p}{(}\PY{n}{sentence}\PY{o}{.}\PY{n}{root}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-
-
-
-
-
-
-
-
-  0\%|          | 0/38 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-  8\%|▊         | 3/38 [00:00<00:01, 28.77it/s]
-
-
-
-
-
-
-
- 13\%|█▎        | 5/38 [00:00<00:01, 23.87it/s]
-
-
-
-
-
-
-
- 18\%|█▊        | 7/38 [00:00<00:01, 20.89it/s]
-
-
-
-
-
-
-
- 24\%|██▎       | 9/38 [00:00<00:01, 19.02it/s]
-
-
-
-
-
-
-
- 29\%|██▉       | 11/38 [00:00<00:01, 16.90it/s]
-
-
-
-
-
-
-
- 34\%|███▍      | 13/38 [00:00<00:01, 14.91it/s]
-
-
-
-
-
-
-
- 39\%|███▉      | 15/38 [00:00<00:01, 14.17it/s]
-
-
-
-
-
-
-
- 45\%|████▍     | 17/38 [00:01<00:01, 12.22it/s]
-
-
-
-
-
-
-
- 50\%|█████     | 19/38 [00:01<00:01, 11.08it/s]
-
-
-
-
-
-
-
- 55\%|█████▌    | 21/38 [00:01<00:01, 10.25it/s]
-
-
-
-
-
-
-
- 61\%|██████    | 23/38 [00:01<00:01,  9.77it/s]
-
-
-
-
-
-
-
- 63\%|██████▎   | 24/38 [00:01<00:01,  9.32it/s]
-
-
-
-
-
-
-
- 66\%|██████▌   | 25/38 [00:02<00:01,  8.92it/s]
-
-
-
-
-
-
-
- 68\%|██████▊   | 26/38 [00:02<00:01,  8.41it/s]
-
-
-
-
-
-
-
- 71\%|███████   | 27/38 [00:02<00:01,  7.72it/s]
-
-
-
-
-
-
-
- 74\%|███████▎  | 28/38 [00:02<00:01,  7.15it/s]
-
-
-
-
-
-
-
- 76\%|███████▋  | 29/38 [00:02<00:01,  6.70it/s]
-
-
-
-
-
-
-
- 79\%|███████▉  | 30/38 [00:02<00:01,  6.25it/s]
-
-
-
-
-
-
-
- 82\%|████████▏ | 31/38 [00:03<00:01,  6.10it/s]
-
-
-
-
-
-
-
- 84\%|████████▍ | 32/38 [00:03<00:00,  6.10it/s]
-
-
-
-
-
-
-
- 87\%|████████▋ | 33/38 [00:03<00:00,  6.04it/s]
-
-
-
-
-
-
-
- 89\%|████████▉ | 34/38 [00:03<00:00,  5.72it/s]
-
-
-
-
-
-
-
- 92\%|█████████▏| 35/38 [00:03<00:00,  5.30it/s]
-
-
-
-
-
-
-
- 95\%|█████████▍| 36/38 [00:04<00:00,  5.29it/s]
-
-
-
-
-
-
-
- 97\%|█████████▋| 37/38 [00:04<00:00,  5.26it/s]
-
-
-
-
-
-
-
-100\%|██████████| 38/38 [00:04<00:00,  5.24it/s]
-
-
-
-
-
-
-
+March - pobj
+	2017 - nummod
+-------------------------------------------
+	a - det
+woman - nsubj
+-------------------------------------------
+	the - det
+	admissions - compound
+coordinator - pobj
+	at - prep
+				Madison - compound
+			York - compound
+			Assisted - compound
+		Living - pobj
+			in - prep
+				Queens - pobj
+-------------------------------------------
+Queens - pobj
+-------------------------------------------
+placement - pobj
+	for - prep
+			her - poss
+		mother - pobj
+			in - prep
+				law - pobj
+				who - nsubj
+				was - aux
+			using - relcl
+					a - det
+				wheelchair - dobj
+					while - mark
+				recovering - advcl
+					from - prep
+							hip - compound
+						surgery - pobj
+-------------------------------------------
+	her - poss
+mother - pobj
+	in - prep
+		law - pobj
+		who - nsubj
+		was - aux
+	using - relcl
+			a - det
+		wheelchair - dobj
+			while - mark
+		recovering - advcl
+			from - prep
+					hip - compound
+				surgery - pobj
+-------------------------------------------
+law - pobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	a - det
+wheelchair - dobj
+-------------------------------------------
+	hip - compound
+surgery - pobj
+-------------------------------------------
+Wheelchairs - nsubjpass
+-------------------------------------------
+	the - det
+facility - pobj
+-------------------------------------------
+	the - det
+coordinator - nsubj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+Walkers - nsubj
+	canes - conj
+		rollators - conj
+				hemi - amod
+			canes - conj
+-------------------------------------------
+canes - conj
+	rollators - conj
+			hemi - amod
+		canes - conj
+-------------------------------------------
+rollators - conj
+		hemi - amod
+	canes - conj
+-------------------------------------------
+	hemi - amod
+canes - conj
+-------------------------------------------
+something - nsubj
+	like - prep
+		that - pobj
+-------------------------------------------
+he - nsubj
+-------------------------------------------
+we - nsubj
+-------------------------------------------
+	a - det
+		wheelchair - npadvmod
+	bound - amod
+patient - dobj
+-------------------------------------------
+November - pobj
+-------------------------------------------
+	another - det
+woman - nsubj
+	seeking - acl
+-------------------------------------------
+	her - poss
+mother - pobj
+	in - prep
+		law - pobj
+-------------------------------------------
+law - pobj
+-------------------------------------------
+	the - det
+	admissions - compound
+coordinator - dobj
+	at - prep
+		VillageCare - pobj
+-------------------------------------------
+VillageCare - pobj
+-------------------------------------------
+Manhattan - pobj
+-------------------------------------------
+We - nsubj
+-------------------------------------------
+residents - dobj
+-------------------------------------------
+wheelchairs - pobj
+-------------------------------------------
+	the - det
+coordinator - nsubj
+-------------------------------------------
+phone - pobj
+-------------------------------------------
+	the - det
+woman - nsubj
+-------------------------------------------
+	her - poss
+mother - nsubj
+	in - prep
+		law - pobj
+-------------------------------------------
+law - pobj
+-------------------------------------------
+	a - det
+chair - dobj
+-------------------------------------------
+decades - pobj
+-------------------------------------------
+assistance - pobj
+-------------------------------------------
+	The - det
+coordinator - nsubj
+-------------------------------------------
+We - nsubj
+-------------------------------------------
+anyone - dobj
+	in - prep
+			a - det
+		wheelchair - pobj
+-------------------------------------------
+	a - det
+wheelchair - pobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+	both - det
+places - pobj
+-------------------------------------------
+	two - nummod
+	other - amod
+	assisted - amod
+	living - amod
+facilities - pobj
+	in - prep
+				New - compound
+			York - compound
+		City - pobj
+			people - appos
+					who - nsubj
+				made - relcl
+						similar - amod
+					inquiries - dobj
+-------------------------------------------
+		New - compound
+	York - compound
+City - pobj
+	people - appos
+			who - nsubj
+		made - relcl
+				similar - amod
+			inquiries - dobj
+-------------------------------------------
+people - appos
+		who - nsubj
+	made - relcl
+			similar - amod
+		inquiries - dobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	similar - amod
+inquiries - dobj
+-------------------------------------------
+	their - poss
+relatives - dobj
+-------------------------------------------
+applications - dobj
+-------------------------------------------
+None - nsubj
+	of - prep
+			these - det
+		people - pobj
+-------------------------------------------
+	these - det
+people - pobj
+-------------------------------------------
+	family - compound
+members - dobj
+		who - nsubj
+	needed - relcl
+			assisted - amod
+		living - dobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	assisted - amod
+living - dobj
+-------------------------------------------
+They - nsubj
+-------------------------------------------
+testers - attr
+		professional - amod
+	actors - appos
+		working - acl
+			for - prep
+					the - det
+					nonprofit - amod
+						Fair - compound
+						Housing - compound
+					Justice - compound
+				Center - pobj
+				to - aux
+			investigate - advcl
+					whether - mark
+						such - amod
+					facilities - nsubj
+				discriminate - ccomp
+					against - prep
+							wheelchair - compound
+						users - pobj
+-------------------------------------------
+	professional - amod
+actors - appos
+	working - acl
+		for - prep
+				the - det
+				nonprofit - amod
+					Fair - compound
+					Housing - compound
+				Justice - compound
+			Center - pobj
+			to - aux
+		investigate - advcl
+				whether - mark
+					such - amod
+				facilities - nsubj
+			discriminate - ccomp
+				against - prep
+						wheelchair - compound
+					users - pobj
+-------------------------------------------
+	the - det
+	nonprofit - amod
+		Fair - compound
+		Housing - compound
+	Justice - compound
+Center - pobj
+-------------------------------------------
+	such - amod
+facilities - nsubj
+-------------------------------------------
+	wheelchair - compound
+users - pobj
+-------------------------------------------
+Excerpts - nsubjpass
+	from - prep
+			their - poss
+			recorded - amod
+		conversations - pobj
+-------------------------------------------
+	their - poss
+	recorded - amod
+conversations - pobj
+-------------------------------------------
+	a - det
+	federal - amod
+lawsuit - pobj
+	filed - acl
+		against - prep
+				those - det
+			centers - pobj
+-------------------------------------------
+	those - det
+centers - pobj
+-------------------------------------------
+they - nsubj
+-------------------------------------------
+people - pobj
+	in - prep
+		wheelchairs - pobj
+-------------------------------------------
+wheelchairs - pobj
+-------------------------------------------
+	the - det
+		Fair - compound
+	Housing - compound
+Act - dobj
+		the - det
+	Americans - appos
+		with - prep
+			Disabilities - pobj
+		Act - appos
+			and - cc
+				other - amod
+				federal - amod
+			laws - conj
+-------------------------------------------
+	the - det
+Americans - appos
+	with - prep
+		Disabilities - pobj
+	Act - appos
+		and - cc
+			other - amod
+			federal - amod
+		laws - conj
+-------------------------------------------
+Disabilities - pobj
+-------------------------------------------
+Act - appos
+	and - cc
+		other - amod
+		federal - amod
+	laws - conj
+-------------------------------------------
+	other - amod
+	federal - amod
+laws - conj
+-------------------------------------------
+People - nsubjpass
+-------------------------------------------
+eviction - pobj
+-------------------------------------------
+	even - amod
+		part - amod
+	time - compound
+use - pobj
+	of - prep
+			a - det
+		wheelchair - pobj
+-------------------------------------------
+	a - det
+wheelchair - pobj
+-------------------------------------------
+	Fred - compound
+Freiberg - nsubj
+	director - appos
+		of - prep
+				the - det
+				discrimination - compound
+			group - pobj
+					which - nsubj
+				brought - relcl
+						the - det
+					suit - dobj
+					after - prep
+						receiving - pcomp
+							complaints - dobj
+							from - prep
+								residents - pobj
+									and - cc
+									families - conj
+-------------------------------------------
+director - appos
+	of - prep
+			the - det
+			discrimination - compound
+		group - pobj
+				which - nsubj
+			brought - relcl
+					the - det
+				suit - dobj
+				after - prep
+					receiving - pcomp
+						complaints - dobj
+						from - prep
+							residents - pobj
+								and - cc
+								families - conj
+-------------------------------------------
+	the - det
+	discrimination - compound
+group - pobj
+		which - nsubj
+	brought - relcl
+			the - det
+		suit - dobj
+		after - prep
+			receiving - pcomp
+				complaints - dobj
+				from - prep
+					residents - pobj
+						and - cc
+						families - conj
+-------------------------------------------
+	the - det
+suit - dobj
+-------------------------------------------
+complaints - dobj
+-------------------------------------------
+residents - pobj
+	and - cc
+	families - conj
+-------------------------------------------
+families - conj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+They - nsubjpass
+-------------------------------------------
+you - nsubj
+-------------------------------------------
+	a - det
+wheelchair - dobj
+-------------------------------------------
+you - nsubj
+-------------------------------------------
+	anymore.’ - nmod
+	Related - amod
+cases - nsubj
+-------------------------------------------
+years - pobj
+-------------------------------------------
+	senior - amod
+housing - pobj
+	nationwide - advmod
+-------------------------------------------
+	continuing - amod
+		care - compound
+	retirement - compound
+communities - pobj
+-------------------------------------------
+instance - pobj
+-------------------------------------------
+	the - det
+	Justice - compound
+Department - nsubj
+-------------------------------------------
+settlements - dobj
+	with - prep
+			a - det
+			continuing - amod
+			care - compound
+		facility - pobj
+			in - prep
+				Norfolk - pobj
+					Va. - appos
+			and - cc
+			one - conj
+				in - prep
+					Lincolnshire - pobj
+						Ill. - appos
+				for - prep
+					discriminating - pcomp
+						against - prep
+							residents - pobj
+								with - prep
+									disabilities - pobj
+-------------------------------------------
+	a - det
+	continuing - amod
+	care - compound
+facility - pobj
+	in - prep
+		Norfolk - pobj
+			Va. - appos
+	and - cc
+	one - conj
+		in - prep
+			Lincolnshire - pobj
+				Ill. - appos
+		for - prep
+			discriminating - pcomp
+				against - prep
+					residents - pobj
+						with - prep
+							disabilities - pobj
+-------------------------------------------
+Norfolk - pobj
+	Va. - appos
+-------------------------------------------
+Va. - appos
+-------------------------------------------
+Lincolnshire - pobj
+	Ill. - appos
+-------------------------------------------
+Ill. - appos
+-------------------------------------------
+residents - pobj
+	with - prep
+		disabilities - pobj
+-------------------------------------------
+disabilities - pobj
+-------------------------------------------
+	nursing - compound
+homes - pobj
+		which - nsubj
+	are - relcl
+		subject - acomp
+			to - prep
+					federal - amod
+				regulations - pobj
+					and - cc
+						regular - amod
+					inspections - conj
+-------------------------------------------
+	federal - amod
+regulations - pobj
+	and - cc
+		regular - amod
+	inspections - conj
+-------------------------------------------
+	regular - amod
+inspections - conj
+-------------------------------------------
+	assisted - amod
+		and - cc
+	independent - amod
+	living - compound
+facilities - nsubj
+-------------------------------------------
+		widely - advmod
+	varying - amod
+	state - compound
+laws - pobj
+-------------------------------------------
+Oklahoma - nsubj
+	and - cc
+	Alabama - conj
+-------------------------------------------
+Alabama - conj
+-------------------------------------------
+residents - dobj
+-------------------------------------------
+instance - pobj
+-------------------------------------------
+Kentucky - nsubj
+-------------------------------------------
+admission - dobj
+	of - prep
+			the - det
+			mobile - amod
+		nonambulatory - pobj
+-------------------------------------------
+	the - det
+	mobile - amod
+nonambulatory - pobj
+-------------------------------------------
+people - dobj
+		who - nsubj
+	use - relcl
+		walkers - dobj
+			or - cc
+			wheelchairs - conj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+walkers - dobj
+	or - cc
+	wheelchairs - conj
+-------------------------------------------
+wheelchairs - conj
+-------------------------------------------
+	Many - amod
+states - nsubj
+-------------------------------------------
+	similar - amod
+policies - dobj
+-------------------------------------------
+	different - amod
+language - pobj
+-------------------------------------------
+	no - det
+wheelchairs,’ - dobj
+-------------------------------------------
+	Susan - compound
+Silverstein - nsubj
+		a - det
+		senior - amod
+	lawyer - appos
+		for - prep
+				the - det
+				AARP - compound
+			Foundation - pobj
+					which - nsubj
+					is - aux
+				representing - relcl
+						the - det
+					plaintiffs - dobj
+-------------------------------------------
+	a - det
+	senior - amod
+lawyer - appos
+	for - prep
+			the - det
+			AARP - compound
+		Foundation - pobj
+				which - nsubj
+				is - aux
+			representing - relcl
+					the - det
+				plaintiffs - dobj
+-------------------------------------------
+	the - det
+	AARP - compound
+Foundation - pobj
+		which - nsubj
+		is - aux
+	representing - relcl
+			the - det
+		plaintiffs - dobj
+-------------------------------------------
+	the - det
+plaintiffs - dobj
+-------------------------------------------
+Facilities - nsubj
+-------------------------------------------
+	their - poss
+policies - dobj
+-------------------------------------------
+	state - compound
+laws - dobj
+		that - nsubj
+	are - relcl
+		ambiguous - acomp
+-------------------------------------------
+Administrators - nsubj
+	of - prep
+			the - det
+		facilities - pobj
+			named - acl
+				in - prep
+						the - det
+							New - compound
+						York - compound
+					lawsuit - pobj
+			including - prep
+						Elm - compound
+					York - compound
+					Assisted - compound
+				Living - pobj
+					and - cc
+						Madison - compound
+					York - conj
+						Assisted - compound
+					Living - conj
+				which - nsubj
+			share - relcl
+				ownership - dobj
+				with - prep
+						the - det
+						other - amod
+					residence - pobj
+						in - prep
+							Queens - pobj
+-------------------------------------------
+	the - det
+facilities - pobj
+	named - acl
+		in - prep
+				the - det
+					New - compound
+				York - compound
+			lawsuit - pobj
+	including - prep
+				Elm - compound
+			York - compound
+			Assisted - compound
+		Living - pobj
+			and - cc
+				Madison - compound
+			York - conj
+				Assisted - compound
+			Living - conj
+		which - nsubj
+	share - relcl
+		ownership - dobj
+		with - prep
+				the - det
+				other - amod
+			residence - pobj
+				in - prep
+					Queens - pobj
+-------------------------------------------
+	the - det
+		New - compound
+	York - compound
+lawsuit - pobj
+-------------------------------------------
+		Elm - compound
+	York - compound
+	Assisted - compound
+Living - pobj
+	and - cc
+		Madison - compound
+	York - conj
+		Assisted - compound
+	Living - conj
+-------------------------------------------
+	Madison - compound
+York - conj
+-------------------------------------------
+	Assisted - compound
+Living - conj
+-------------------------------------------
+ownership - dobj
+-------------------------------------------
+	the - det
+	other - amod
+residence - pobj
+	in - prep
+		Queens - pobj
+-------------------------------------------
+Queens - pobj
+-------------------------------------------
+	state - compound
+laws - dobj
+-------------------------------------------
+reasons - pobj
+		to - aux
+	exclude - relcl
+			wheelchair - compound
+		users - dobj
+-------------------------------------------
+	wheelchair - compound
+users - dobj
+-------------------------------------------
+	the - det
+complaint - pobj
+-------------------------------------------
+	this - det
+case - pobj
+-------------------------------------------
+they - nsubj
+-------------------------------------------
+			New - compound
+		York - compound
+	State - compound
+regulations - nsubj
+	governing - acl
+				adult - compound
+			care - compound
+		facilities - dobj
+	and - cc
+			Medicaid - npadvmod
+		funded - amod
+		assisted - amod
+		living - compound
+	programs - conj
+			which - dobj
+				all - det
+				four - nummod
+			facilities - nsubjpass
+			are - auxpass
+		licensed - relcl
+				to - aux
+			offer - advcl
+-------------------------------------------
+		adult - compound
+	care - compound
+facilities - dobj
+-------------------------------------------
+		Medicaid - npadvmod
+	funded - amod
+	assisted - amod
+	living - compound
+programs - conj
+		which - dobj
+			all - det
+			four - nummod
+		facilities - nsubjpass
+		are - auxpass
+	licensed - relcl
+			to - aux
+		offer - advcl
+-------------------------------------------
+	all - det
+	four - nummod
+facilities - nsubjpass
+-------------------------------------------
+residents - dobj
+		who - nsubj
+	are - relcl
+			chronically - advmod
+		chairfast - acomp
+			and - cc
+			unable - conj
+					to - aux
+				transfer - xcomp
+		or - cc
+		require - conj
+			assistance - dobj
+				to - aux
+			transfer - xcomp
+						even - advmod
+					when - advmod
+					as - prep
+						in - prep
+								this - det
+							case - pobj
+						the - det
+					buildings - nsubj
+				have - advcl
+					elevators - dobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+assistance - dobj
+-------------------------------------------
+	this - det
+case - pobj
+-------------------------------------------
+	the - det
+buildings - nsubj
+-------------------------------------------
+elevators - dobj
+-------------------------------------------
+	Those - det
+		40-year - npadvmod
+	old - amod
+policies - nsubj
+-------------------------------------------
+	the - det
+	federal - amod
+laws - dobj
+	barring - acl
+		discrimination - dobj
+			based - acl
+				on - prep
+					disability - pobj
+-------------------------------------------
+discrimination - dobj
+	based - acl
+		on - prep
+			disability - pobj
+-------------------------------------------
+disability - pobj
+-------------------------------------------
+	the - det
+state - nsubj
+-------------------------------------------
+them - dobj
+-------------------------------------------
+	that - det
+reason - pobj
+-------------------------------------------
+	the - det
+lawsuit - nsubj
+-------------------------------------------
+	the - det
+	state - compound
+	health - compound
+department - dobj
+	and - cc
+	commissioner - conj
+-------------------------------------------
+commissioner - conj
+-------------------------------------------
+	Gov. - compound
+	Andrew - compound
+Cuomo - conj
+	as - prep
+		defendants - pobj
+-------------------------------------------
+defendants - pobj
+-------------------------------------------
+	Neither - preconj
+		the - det
+	governor - poss
+		’s - case
+office - nsubj
+	nor - cc
+		the - det
+		four - nummod
+		assisted - amod
+		living - compound
+	facilities - conj
+-------------------------------------------
+	the - det
+	four - nummod
+	assisted - amod
+	living - compound
+facilities - conj
+-------------------------------------------
+		The - det
+	state - poss
+		’s - case
+	health - compound
+department - nsubj
+-------------------------------------------
+it - nsubj
+-------------------------------------------
+	adult - compound
+homes - pobj
+-------------------------------------------
+it - nsubj
+-------------------------------------------
+	existing - amod
+homes - pobj
+-------------------------------------------
+	remediation - compound
+plans - pobj
+		that - nsubj
+	include - relcl
+			appropriate - amod
+		upgrades - dobj
+-------------------------------------------
+	appropriate - amod
+upgrades - dobj
+-------------------------------------------
+		Newly - advmod
+	constructed - amod
+	adult - compound
+homes - nsubj
+-------------------------------------------
+it - nsubj
+-------------------------------------------
+	federal - amod
+		state - conj
+			and - cc
+			local - conj
+	accessibility - compound
+requirements - pobj
+-------------------------------------------
+	The - det
+suit - nsubj
+-------------------------------------------
+	the - det
+	four - nummod
+facilities - nsubj
+-------------------------------------------
+	nondiscriminatory - amod
+admission - dobj
+	and - cc
+		retention - compound
+	policies - conj
+-------------------------------------------
+	retention - compound
+policies - conj
+-------------------------------------------
+	the - det
+state - nsubj
+-------------------------------------------
+	its - poss
+regulations - dobj
+		to - aux
+	reflect - acl
+			federal - amod
+		law - dobj
+-------------------------------------------
+	federal - amod
+law - dobj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+training - dobj
+	and - cc
+	monitoring - conj
+		to - aux
+	ensure - advcl
+		compliance - dobj
+-------------------------------------------
+monitoring - conj
+-------------------------------------------
+compliance - dobj
+-------------------------------------------
+administrators - nsubj
+-------------------------------------------
+applicants - dobj
+	for - prep
+			individual - amod
+		reasons - pobj
+-------------------------------------------
+	individual - amod
+reasons - pobj
+-------------------------------------------
+they - nsubj
+-------------------------------------------
+	blanket - compound
+rules - dobj
+-------------------------------------------
+wheelchairs - pobj
+-------------------------------------------
+	a - det
+		much - advmod
+	larger - amod
+number - attr
+	of - prep
+		people - pobj
+-------------------------------------------
+people - pobj
+-------------------------------------------
+	the - det
+	next - amod
+	few - amod
+years - pobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	assisted - amod
+living - dobj
+-------------------------------------------
+	those - det
+facilities - nsubj
+-------------------------------------------
+people - pobj
+-------------------------------------------
+	Mr. - compound
+Freiberg - nsubj
+-------------------------------------------
+	the - det
+	assisted - amod
+	living - compound
+industry - nsubj
+-------------------------------------------
+people - dobj
+		who - nsubj
+		are - aux
+	paying - relcl
+		for - prep
+				the - det
+			care - pobj
+				themselves - appos
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	the - det
+care - pobj
+	themselves - appos
+-------------------------------------------
+themselves - appos
+-------------------------------------------
+	the - det
+percentage - nsubj
+	covered - acl
+		by - agent
+			Medicaid - pobj
+-------------------------------------------
+Medicaid - pobj
+-------------------------------------------
+	Eric - compound
+Carlson - nsubj
+		a - det
+	lawyer - appos
+		at - prep
+			Justice - pobj
+				in - prep
+					Aging - pobj
+		an - det
+		advocacy - compound
+	group - appos
+			not - neg
+		involved - acl
+			in - prep
+					the - det
+				lawsuit - pobj
+-------------------------------------------
+	a - det
+lawyer - appos
+	at - prep
+		Justice - pobj
+			in - prep
+				Aging - pobj
+-------------------------------------------
+Justice - pobj
+	in - prep
+		Aging - pobj
+-------------------------------------------
+Aging - pobj
+-------------------------------------------
+	an - det
+	advocacy - compound
+group - appos
+		not - neg
+	involved - acl
+		in - prep
+				the - det
+			lawsuit - pobj
+-------------------------------------------
+	the - det
+lawsuit - pobj
+-------------------------------------------
+	A - det
+	recent - amod
+		Government - compound
+		Accountability - compound
+	Office - compound
+report - nsubj
+-------------------------------------------
+Medicaid - nsubj
+-------------------------------------------
+		assisted - amod
+	living - compound
+services - dobj
+	for - prep
+				more - amod
+				than - quantmod
+			330,000 - nummod
+		people - pobj
+			in - prep
+					48 - nummod
+				states - pobj
+-------------------------------------------
+		more - amod
+		than - quantmod
+	330,000 - nummod
+people - pobj
+	in - prep
+			48 - nummod
+		states - pobj
+-------------------------------------------
+	48 - nummod
+states - pobj
+-------------------------------------------
+part - dobj
+	of - prep
+			the - det
+		effort - pobj
+				to - aux
+			support - acl
+				alternatives - dobj
+				to - prep
+						expensive - amod
+						nursing - compound
+					homes - pobj
+-------------------------------------------
+	the - det
+effort - pobj
+		to - aux
+	support - acl
+		alternatives - dobj
+		to - prep
+				expensive - amod
+				nursing - compound
+			homes - pobj
+-------------------------------------------
+alternatives - dobj
+-------------------------------------------
+	expensive - amod
+	nursing - compound
+homes - pobj
+-------------------------------------------
+	A - det
+	favorable - amod
+settlement - nsubj
+	or - cc
+		trial - compound
+	verdict - conj
+	in - prep
+			the - det
+				New - compound
+			York - compound
+		lawsuit - pobj
+-------------------------------------------
+	trial - compound
+verdict - conj
+-------------------------------------------
+	the - det
+		New - compound
+	York - compound
+lawsuit - pobj
+-------------------------------------------
+changes - dobj
+-------------------------------------------
+	assisted - amod
+living - pobj
+	beyond - prep
+			Medicaid - compound
+		programs - pobj
+		and - cc
+		beyond - conj
+					New - compound
+				York - compound
+			State - pobj
+-------------------------------------------
+	Medicaid - compound
+programs - pobj
+-------------------------------------------
+		New - compound
+	York - compound
+State - pobj
+-------------------------------------------
+		Private - amod
+	pay - nmod
+	assisted - amod
+living - nsubj
+-------------------------------------------
+	the - det
+		Fair - compound
+	Housing - compound
+Act - pobj
+-------------------------------------------
+	Jota - compound
+Borgmann - nsubj
+		senior - amod
+		staff - compound
+	lawyer - appos
+		at - prep
+			Mobilization - pobj
+				for - prep
+					Justice - pobj
+			a - det
+				legal - amod
+			services - compound
+		organization - conj
+			and - cc
+						counsel - punct
+					in - punct
+				the - det
+			case - conj
+-------------------------------------------
+	senior - amod
+	staff - compound
+lawyer - appos
+	at - prep
+		Mobilization - pobj
+			for - prep
+				Justice - pobj
+		a - det
+			legal - amod
+		services - compound
+	organization - conj
+		and - cc
+					counsel - punct
+				in - punct
+			the - det
+		case - conj
+-------------------------------------------
+Mobilization - pobj
+	for - prep
+		Justice - pobj
+-------------------------------------------
+Justice - pobj
+-------------------------------------------
+	a - det
+		legal - amod
+	services - compound
+organization - conj
+	and - cc
+				counsel - punct
+			in - punct
+		the - det
+	case - conj
+-------------------------------------------
+			counsel - punct
+		in - punct
+	the - det
+case - conj
+-------------------------------------------
+		Similar - amod
+	court - compound
+cases - nsubj
+-------------------------------------------
+	assisted - amod
+	living - compound
+regulations - dobj
+	and - cc
+	practices - conj
+		around - prep
+				the - det
+			country - pobj
+-------------------------------------------
+practices - conj
+	around - prep
+			the - det
+		country - pobj
+-------------------------------------------
+	the - det
+country - pobj
+-------------------------------------------
+	Mr. - compound
+Carlson - nsubj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+	a - det
+switch - dobj
+-------------------------------------------
+he - nsubj
+-------------------------------------------
+It - nsubjpass
+-------------------------------------------
+step - pobj
+-------------------------------------------
+they - nsubj
+-------------------------------------------
+impact - dobj
+-------------------------------------------
+	the - det
+relatives - nsubj
+		that - dobj
+		testers - nsubj
+	described - relcl
+		to - prep
+			administrators - pobj
+-------------------------------------------
+testers - nsubj
+-------------------------------------------
+administrators - pobj
+-------------------------------------------
+	her - poss
+60s - pobj
+-------------------------------------------
+	court - compound
+filings - pobj
+		only - advmod
+	as - prep
+			Jane - compound
+		Doe - pobj
+-------------------------------------------
+	Jane - compound
+Doe - pobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+she - nsubjpass
+-------------------------------------------
+	care - compound
+facilities - pobj
+-------------------------------------------
+She - nsubj
+-------------------------------------------
+	a - det
+plaintiff - attr
+	in - prep
+			the - det
+		lawsuit - pobj
+-------------------------------------------
+	the - det
+lawsuit - pobj
+-------------------------------------------
+	her - poss
+brother - pobj
+		who - nsubj
+	acts - relcl
+		as - prep
+				her - poss
+			power - pobj
+				of - prep
+					attorney - pobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	her - poss
+power - pobj
+	of - prep
+		attorney - pobj
+-------------------------------------------
+attorney - pobj
+-------------------------------------------
+	severe - amod
+osteoporosis - pobj
+-------------------------------------------
+	the - det
+plaintiff - nsubj
+-------------------------------------------
+VillageCare - pobj
+-------------------------------------------
+	five - nummod
+years - pobj
+-------------------------------------------
+	last - amod
+spring - pobj
+		when - advmod
+			a - det
+			urinary - amod
+			tract - compound
+		infection - nsubj
+			and - cc
+				its - poss
+			complications - conj
+	sent - relcl
+		her - dobj
+		to - prep
+				a - det
+			hospital - pobj
+-------------------------------------------
+	a - det
+	urinary - amod
+	tract - compound
+infection - nsubj
+	and - cc
+		its - poss
+	complications - conj
+-------------------------------------------
+	its - poss
+complications - conj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+	a - det
+hospital - pobj
+-------------------------------------------
+	a - det
+	nursing - compound
+home - pobj
+-------------------------------------------
+rehabilitation - pobj
+-------------------------------------------
+	two - nummod
+months - pobj
+-------------------------------------------
+	the - det
+complaint - pobj
+-------------------------------------------
+VillageCare - nsubj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+	more - amod
+assistance - dobj
+		than - mark
+		it - nsubj
+		could - aux
+	provide - advcl
+	including - prep
+		help - pobj
+			with - prep
+				ambulation - pobj
+-------------------------------------------
+it - nsubj
+-------------------------------------------
+help - pobj
+	with - prep
+		ambulation - pobj
+-------------------------------------------
+ambulation - pobj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+	eviction - compound
+proceedings - dobj
+		which - dobj
+			her - poss
+		brother - nsubj
+	contested - relcl
+-------------------------------------------
+	her - poss
+brother - nsubj
+-------------------------------------------
+December - pobj
+-------------------------------------------
+	the - det
+facility - nsubj
+-------------------------------------------
+person - pobj
+-------------------------------------------
+assessment - conj
+-------------------------------------------
+	The - det
+session - nsubj
+	including - prep
+			cognitive - amod
+		tests - pobj
+			sitting - conj
+				and - cc
+				standing - conj
+				and - cc
+				taking - conj
+						her - poss
+					shoes - dobj
+					on - prep
+						and - cc
+						off - conj
+-------------------------------------------
+	cognitive - amod
+tests - pobj
+	sitting - conj
+		and - cc
+		standing - conj
+		and - cc
+		taking - conj
+				her - poss
+			shoes - dobj
+			on - prep
+				and - cc
+				off - conj
+-------------------------------------------
+	her - poss
+shoes - dobj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+	her - poss
+brother - nsubj
+		who - nsubj
+	traveled - relcl
+		from - prep
+				his - poss
+				Florida - compound
+			home - pobj
+			to - aux
+		accompany - advcl
+			her - dobj
+-------------------------------------------
+who - nsubj
+-------------------------------------------
+	his - poss
+	Florida - compound
+home - pobj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+	a - det
+		very - advmod
+	difficult - amod
+thing - attr
+-------------------------------------------
+	my - poss
+sister - nsubj
+-------------------------------------------
+it - dobj
+-------------------------------------------
+She - nsubj
+-------------------------------------------
+	her - poss
+walker - pobj
+-------------------------------------------
+VillageCare - nsubj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+assistance - dobj
+	with - prep
+		activities - pobj
+			of - prep
+					daily - amod
+				living - pobj
+					including - prep
+						locomotion - pobj
+-------------------------------------------
+activities - pobj
+	of - prep
+			daily - amod
+		living - pobj
+			including - prep
+				locomotion - pobj
+-------------------------------------------
+	daily - amod
+living - pobj
+	including - prep
+		locomotion - pobj
+-------------------------------------------
+locomotion - pobj
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+	a - det
+	nursing - compound
+home - pobj
+		where - advmod
+		she - nsubjpass
+		is - auxpass
+	discouraged - relcl
+		from - prep
+			walking - pcomp
+					at - advmod
+				all - advmod
+-------------------------------------------
+she - nsubjpass
+-------------------------------------------
+worries - conj
+		that - mark
+		she - nsubj
+		may - aux
+		never - neg
+	go - ccomp
+		home - advmod
+-------------------------------------------
+she - nsubj
+-------------------------------------------
+It - nsubj
+-------------------------------------------
+	her - poss
+brother - nsubj
+-------------------------------------------
+I - nsubj
+-------------------------------------------
+her - dobj
+-------------------------------------------
+You - nsubj
+-------------------------------------------
+day,’ - ROOT
+-------------------------------------------
+I - nsubj
+-------------------------------------------
 
     \end{Verbatim}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}180}]:} \PY{c+c1}{\PYZsh{} plot the results}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{k\PYZus{}range}\PY{p}{,} \PY{n}{scores}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Number of clusters}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Silhouette Coefficient}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
-          \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}10}]:} \PY{c+c1}{\PYZsh{} Spacy tutorial method}
+         \PY{k}{for} \PY{n}{chunk} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{o}{.}\PY{n}{noun\PYZus{}chunks}\PY{p}{:}
+             \PY{n+nb}{print}\PY{p}{(}\PY{n}{chunk}\PY{o}{.}\PY{n}{text}\PY{p}{,} 
+                   \PY{n}{chunk}\PY{o}{.}\PY{n}{root}\PY{o}{.}\PY{n}{text}\PY{p}{,} 
+                   \PY{n}{chunk}\PY{o}{.}\PY{n}{root}\PY{o}{.}\PY{n}{dep\PYZus{}}\PY{p}{)}
 \end{Verbatim}
 
 
-    
-    \begin{verbatim}
-<IPython.core.display.Javascript object>
-    \end{verbatim}
+    \begin{Verbatim}[commandchars=\\\{\}]
+March March pobj
+a woman woman nsubj
+the admissions coordinator coordinator pobj
+Queens Queens pobj
+placement placement pobj
+her mother mother pobj
+law law pobj
+who who nsubj
+a wheelchair wheelchair dobj
+hip surgery surgery pobj
+Wheelchairs Wheelchairs nsubjpass
+the facility facility pobj
+the coordinator coordinator nsubj
+her her dobj
+Walkers Walkers nsubj
+canes canes conj
+rollators rollators conj
+hemi canes canes conj
+something something nsubj
+he he nsubj
+we we nsubj
+a wheelchair-bound patient patient dobj
+November November pobj
+another woman woman nsubj
+her mother mother pobj
+law law pobj
+the admissions coordinator coordinator dobj
+VillageCare VillageCare pobj
+Manhattan Manhattan pobj
+We We nsubj
+residents residents dobj
+wheelchairs wheelchairs pobj
+the coordinator coordinator nsubj
+phone phone pobj
+the woman woman nsubj
+her mother mother nsubj
+-law law pobj
+a chair chair dobj
+decades decades pobj
+assistance assistance pobj
+The coordinator coordinator nsubj
+We We nsubj
+anyone anyone dobj
+a wheelchair wheelchair pobj
+she she nsubj
+both places places pobj
+two other assisted living facilities facilities pobj
+New York City City pobj
+people people appos
+who who nsubj
+similar inquiries inquiries dobj
+their relatives relatives dobj
+applications applications dobj
+None None nsubj
+these people people pobj
+family members members dobj
+who who nsubj
+assisted living living dobj
+They They nsubj
+testers testers attr
+professional actors actors appos
+the nonprofit Fair Housing Justice Center Center pobj
+such facilities facilities nsubj
+wheelchair users users pobj
+Excerpts Excerpts nsubjpass
+their recorded conversations conversations pobj
+a federal lawsuit lawsuit pobj
+those centers centers pobj
+they they nsubj
+people people pobj
+wheelchairs wheelchairs pobj
+the Fair Housing Act Act dobj
+the Americans Americans appos
+Disabilities Disabilities pobj
+Act Act appos
+other federal laws laws conj
+People People nsubjpass
+eviction eviction pobj
+even part-time use use pobj
+a wheelchair wheelchair pobj
+Fred Freiberg Freiberg nsubj
+director director appos
+the anti-discrimination group group pobj
+the suit suit dobj
+complaints complaints dobj
+residents residents pobj
+families families conj
+It It nsubj
+They They nsubjpass
+you you nsubj
+a wheelchair wheelchair dobj
+you you nsubj
+anymore.’” Related cases cases nsubj
+years years pobj
+senior housing housing pobj
+continuing care retirement communities communities pobj
+instance instance pobj
+the Justice Department Department nsubj
+settlements settlements dobj
+a continuing care facility facility pobj
+Norfolk Norfolk pobj
+Va. Va. appos
+Lincolnshire Lincolnshire pobj
+Ill. Ill. appos
+residents residents pobj
+disabilities disabilities pobj
+nursing homes homes pobj
+federal regulations regulations pobj
+regular inspections inspections conj
+assisted and independent living facilities facilities nsubj
+widely varying state laws laws pobj
+Oklahoma Oklahoma nsubj
+Alabama Alabama conj
+residents residents dobj
+instance instance pobj
+Kentucky Kentucky nsubj
+admission admission dobj
+the “mobile nonambulatory nonambulatory pobj
+people people dobj
+who who nsubj
+walkers walkers dobj
+wheelchairs wheelchairs conj
+Many states states nsubj
+similar policies policies dobj
+different language language pobj
+‘no wheelchairs,’ wheelchairs,’ dobj
+Susan Silverstein Silverstein nsubj
+a senior lawyer lawyer appos
+the AARP Foundation Foundation pobj
+the plaintiffs plaintiffs dobj
+“Facilities Facilities nsubj
+their policies policies dobj
+state laws laws dobj
+Administrators Administrators nsubj
+the facilities facilities pobj
+the New York lawsuit lawsuit pobj
+Elm York Assisted Living Living pobj
+Madison York York conj
+Assisted Living Living conj
+ownership ownership dobj
+the other residence residence pobj
+Queens Queens pobj
+state laws laws dobj
+reasons reasons pobj
+wheelchair users users dobj
+the complaint complaint pobj
+this case case pobj
+they they nsubj
+New York State regulations regulations nsubj
+“adult care facilities facilities dobj
+Medicaid-funded assisted living programs programs conj
+all four facilities facilities nsubjpass
+residents residents dobj
+who who nsubj
+assistance assistance dobj
+this case case pobj
+the buildings buildings nsubj
+elevators elevators dobj
+Those 40-year-old policies policies nsubj
+the federal laws laws dobj
+discrimination discrimination dobj
+disability disability pobj
+the state state nsubj
+them them dobj
+that reason reason pobj
+the lawsuit lawsuit nsubj
+the state health department department dobj
+commissioner commissioner conj
+Gov. Andrew Cuomo Cuomo conj
+defendants defendants pobj
+Neither the governor’s office office nsubj
+the four assisted living facilities facilities conj
+The state’s health department department nsubj
+it it nsubj
+adult homes homes pobj
+it it nsubj
+existing homes homes pobj
+“remediation plans plans pobj
+appropriate upgrades upgrades dobj
+Newly constructed adult homes homes nsubj
+it it nsubj
+federal, state and local accessibility requirements requirements pobj
+The suit suit nsubj
+the four facilities facilities nsubj
+nondiscriminatory admission admission dobj
+retention policies policies conj
+the state state nsubj
+its regulations regulations dobj
+federal law law dobj
+It It nsubj
+training training dobj
+monitoring monitoring conj
+compliance compliance dobj
+administrators administrators nsubj
+applicants applicants dobj
+individual reasons reasons pobj
+they they nsubj
+blanket rules rules dobj
+wheelchairs wheelchairs pobj
+a much larger number number attr
+people people pobj
+the next few years years pobj
+who who nsubj
+assisted living living dobj
+those facilities facilities nsubj
+people people pobj
+Mr. Freiberg Freiberg nsubj
+the assisted living industry industry nsubj
+people people dobj
+who who nsubj
+the care care pobj
+themselves themselves appos
+the percentage percentage nsubj
+Medicaid Medicaid pobj
+Eric Carlson Carlson nsubj
+a lawyer lawyer appos
+Justice Justice pobj
+Aging Aging pobj
+an advocacy group group appos
+the lawsuit lawsuit pobj
+A recent Government Accountability Office report report nsubj
+Medicaid Medicaid nsubj
+assisted-living services services dobj
+more than 330,000 people people pobj
+48 states states pobj
+part part dobj
+the effort effort pobj
+alternatives alternatives dobj
+expensive nursing homes homes pobj
+A favorable settlement settlement nsubj
+trial verdict verdict conj
+the New York lawsuit lawsuit pobj
+changes changes dobj
+assisted living living pobj
+Medicaid programs programs pobj
+New York State State pobj
+Private-pay assisted living living nsubj
+the Fair Housing Act Act pobj
+Jota Borgmann Borgmann nsubj
+senior staff lawyer lawyer appos
+Mobilization Mobilization pobj
+Justice Justice pobj
+a legal services organization organization conj
+co-counsel in the case case conj
+Similar court cases cases nsubj
+assisted living regulations regulations dobj
+practices practices conj
+the country country pobj
+Mr. Carlson Carlson nsubj
+It It nsubj
+a switch switch dobj
+he he nsubj
+It It nsubjpass
+step step pobj
+they they nsubj
+impact impact dobj
+the relatives relatives nsubj
+testers testers nsubj
+administrators administrators pobj
+her 60s 60s pobj
+court filings filings pobj
+Jane Doe Doe pobj
+she she nsubj
+she she nsubjpass
+care facilities facilities pobj
+She She nsubj
+a plaintiff plaintiff attr
+the lawsuit lawsuit pobj
+her brother brother pobj
+who who nsubj
+her power power pobj
+attorney attorney pobj
+severe osteoporosis osteoporosis pobj
+the plaintiff plaintiff nsubj
+VillageCare VillageCare pobj
+five years years pobj
+last spring spring pobj
+a urinary tract infection infection nsubj
+its complications complications conj
+her her dobj
+a hospital hospital pobj
+a nursing home home pobj
+rehabilitation rehabilitation pobj
+two months months pobj
+the complaint complaint pobj
+VillageCare VillageCare nsubj
+her her dobj
+she she nsubj
+more assistance assistance dobj
+it it nsubj
+help help pobj
+“ambulation ambulation pobj
+her her dobj
+she she nsubj
+It It nsubj
+eviction proceedings proceedings dobj
+her brother brother nsubj
+December December pobj
+the facility facility nsubj
+person person pobj
+assessment assessment conj
+The session session nsubj
+cognitive tests tests pobj
+her shoes shoes dobj
+It It nsubj
+her brother brother nsubj
+who who nsubj
+his Florida home home pobj
+her her dobj
+It It nsubj
+a very difficult thing thing attr
+my sister sister nsubj
+it it dobj
+She She nsubj
+her walker walker pobj
+VillageCare VillageCare nsubj
+her her dobj
+she she nsubj
+assistance assistance dobj
+activities activities pobj
+daily living living pobj
+“locomotion locomotion pobj
+she she nsubj
+a nursing home home pobj
+she she nsubjpass
+worries worries conj
+she she nsubj
+It It nsubj
+her brother brother nsubj
+I I nsubj
+her her dobj
+You You nsubj
+day,’ day,’ ROOT
+I I nsubj
 
-    
-    
-    \begin{verbatim}
-<IPython.core.display.HTML object>
-    \end{verbatim}
+    \end{Verbatim}
 
-    
-    \subsection{Note}\label{note}
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{c+c1}{\PYZsh{} Show the most common Entities and their types.}
+         \PY{n}{entities} \PY{o}{=} \PY{p}{[}\PY{n}{token}\PY{o}{.}\PY{n}{text} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n}{token}\PY{o}{.}\PY{n}{label\PYZus{}}
+                      \PY{k}{for} \PY{n}{token} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{o}{.}\PY{n}{ents}     
+                    \PY{p}{]}
+         \PY{n}{entities\PYZus{}freq} \PY{o}{=} \PY{n}{Counter}\PY{p}{(}\PY{n}{entities}\PY{p}{)}
+         \PY{n}{common\PYZus{}entities} \PY{o}{=} \PY{n}{entities\PYZus{}freq}\PY{o}{.}\PY{n}{most\PYZus{}common}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+         \PY{n}{common\PYZus{}entities}
+\end{Verbatim}
 
-You may use any for both parts 1 and 2, I only recommend using the data
-I used in the Lesson for part 1. I've included several new datasets in
-the \texttt{data/} folder, such as \texttt{beers.csv},
-\texttt{snow\_tweets.csv}, \texttt{data/USCensus1990.data.txt.gz}. You
-do not need to unzip or ungzip any data files. Pandas can open these
-files on its own.
 
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}11}]:} [('VillageCare ORG', 4),
+          ('Medicaid ORG', 4),
+          ('four CARDINAL', 3),
+          ('Queens GPE', 2),
+          ('the Fair Housing Act LAW', 2),
+          ('New York GPE', 2),
+          ('New York State GPE', 2),
+          ('March 2017 DATE', 1),
+          ('Madison York Assisted Living GPE', 1),
+          ('November DATE', 1)]
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{c+c1}{\PYZsh{} Find Entites and their dependency (hint: entity.root.head)}
+         \PY{k}{for} \PY{n}{entity} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{o}{.}\PY{n}{ents}\PY{p}{:}
+             \PY{n+nb}{print}\PY{p}{(}\PY{n}{entity}\PY{o}{.}\PY{n}{label\PYZus{}}\PY{p}{,} \PY{n}{entity}\PY{o}{.}\PY{n}{root}\PY{o}{.}\PY{n}{head}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+DATE In
+GPE at
+GPE in
+DATE In
+ORG at
+CARDINAL at
+GPE in
+DATE for
+CARDINAL facilities
+GPE in
+ORG for
+LAW violating
+LAW Act
+PERSON said
+ORDINAL -
+DATE for
+DATE In
+ORG reached
+GPE in
+GPE Norfolk
+CARDINAL facility
+GPE in
+GPE Lincolnshire
+GPE require
+GPE Oklahoma
+GPE allows
+PERSON said
+ORG for
+GPE lawsuit
+GPE including
+PERSON Living
+PERSON Living
+GPE in
+GPE regulations
+ORG funded
+CARDINAL facilities
+CARDINAL old
+PERSON names
+CARDINAL facilities
+DATE working
+CARDINAL facilities
+DATE in
+PERSON said
+ORG by
+PERSON said
+ORG at
+ORG in
+ORG report
+DATE in
+ORG covered
+CARDINAL people
+CARDINAL states
+GPE lawsuit
+ORG programs
+GPE beyond
+LAW to
+PERSON said
+ORG at
+PERSON pointed
+DATE in
+PERSON as
+ORG at
+DATE for
+DATE until
+DATE After
+ORG told
+DATE In
+TIME lasted
+GPE home
+ORG refused
+DATE living
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{c+c1}{\PYZsh{} Find the most similar words in the article}
+         \PY{n}{mylist}\PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{token1}\PY{o}{.}\PY{n}{text}\PY{p}{,} \PY{n}{token2}\PY{o}{.}\PY{n}{text}\PY{p}{,} \PY{n}{token1}\PY{o}{.}\PY{n}{similarity}\PY{p}{(}\PY{n}{token2}\PY{p}{)}\PY{p}{)} \PY{k}{for} \PY{n}{token2} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text} \PY{k}{for} \PY{n}{token1} \PY{o+ow}{in} \PY{n}{processed\PYZus{}text}\PY{p}{]}
+         
+         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+         
+         \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{mylist}\PY{p}{)}
+         \PY{n}{df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Token1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Token2}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Similarity}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+         \PY{n}{condition} \PY{o}{=} \PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{Similarity} \PY{o}{==} \PY{l+m+mi}{1}\PY{p}{)} \PY{c+c1}{\PYZsh{} excluding complete similarity (identical word comparisons)}
+         \PY{n}{excluded} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{o}{\PYZti{}}\PY{n}{condition}\PY{p}{]}
+         \PY{n}{sort\PYZus{}top} \PY{o}{=} \PY{n}{excluded}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Similarity}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{ascending}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+         \PY{n}{sort\PYZus{}top}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}16}]:}              Token1      Token2  Similarity
+         1466894         she          he    0.940325
+         248974           he         she    0.940325
+         112355        could         can    0.928260
+         235531          can       could    0.928260
+         234145           we          We    0.923165
+         110969           We          we    0.923165
+         128644     December    November    0.919544
+         1695332    November    December    0.919544
+         506992          not         n’t    0.914729
+         113936          n’t         not    0.914729
+         1154915         not         n’t    0.908144
+         1676683         n’t         not    0.908144
+         1152401         can       could    0.906925
+         113017        could         can    0.906925
+         1153787         not         n’t    0.903787
+         114403          n’t         not    0.903787
+         1676216         n’t         not    0.903370
+         508120          not         n’t    0.903370
+         1153876         not         n’t    0.897983
+         237668          n’t         not    0.897983
+         112550           ca         can    0.893729
+         505606          can          ca    0.893729
+         173403           in          on    0.893460
+         385155           on          in    0.893460
+         507081          not         n’t    0.891237
+         237201          n’t         not    0.891237
+         229735          not         n’t    0.891232
+         1676015         n’t         not    0.891232
+         506357        could          ca    0.890284
+         1152685          ca       could    0.890284
+         {\ldots}             {\ldots}         {\ldots}         {\ldots}
+         1509130  facilities          in   -0.361261
+         1199114          in  facilities   -0.361261
+         738227          for  Facilities   -0.362232
+         31003    Facilities         for   -0.362232
+         1851208      larger          is   -0.363472
+         1175816          is      larger   -0.363472
+         1301012        must           -   -0.363726
+         689284            -        must   -0.363726
+         1305203  Facilities         for   -0.365534
+         739147          for  Facilities   -0.365534
+         738778         with  Facilities   -0.375959
+         794138   Facilities        with   -0.375959
+         433013            ,        part   -0.377315
+         1237117        part           ,   -0.377315
+         1145928  Facilities         for   -0.377583
+         739032          for  Facilities   -0.377583
+         739331         with  Facilities   -0.383096
+         1560043  Facilities        with   -0.383096
+         1016817     members  considered   -0.383660
+         315129   considered     members   -0.383660
+         738626         with  Facilities   -0.385675
+         583618   Facilities        with   -0.385675
+         738445          for  Facilities   -0.389710
+         332933   Facilities         for   -0.389710
+         739094          for  Facilities   -0.394835
+         1231798  Facilities         for   -0.394835
+         738458      against  Facilities   -0.402491
+         350938   Facilities     against   -0.402491
+         739042      against  Facilities   -0.410657
+         1159778  Facilities     against   -0.410657
+         
+         [1894752 rows x 3 columns]
+\end{Verbatim}
+            
 
     % Add a bibliography block to the postdoc
     
